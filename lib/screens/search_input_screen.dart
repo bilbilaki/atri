@@ -1,251 +1,164 @@
+// Path: lib/screens/search_input_screen.dart
+import 'dart:async';
+import 'dart:convert';
 import 'package:atri/models/search_item.dart';
 import 'package:atri/utils/app_constants.dart';
 import 'package:atri/utils/app_router.dart';
 import 'package:atri/widgets/search_result_tile.dart';
 import 'package:flutter/material.dart';
-
+import 'package:http/http.dart' as http;
 
 class SearchInputScreen extends StatefulWidget {
-  const SearchInputScreen({super.key});
-
-  @override
-  State<SearchInputScreen> createState() => _SearchInputScreenState();
+ const SearchInputScreen({super.key});
+ @override
+ State<SearchInputScreen> createState() => _SearchInputScreenState();
 }
 
 class _SearchInputScreenState extends State<SearchInputScreen> {
-  final TextEditingController _searchController = TextEditingController(text: '');
-  final FocusNode _focusNode = FocusNode();
+ final TextEditingController _searchController = TextEditingController(text: '');
+ final FocusNode _focusNode = FocusNode();
 
-  final List<SearchItem> _searchHistory = [
-    SearchItem(title: 'figma anime streaming', url: '', isHistory: true),
-    SearchItem(title: 'gemini', url: '', isHistory: true),
-    SearchItem(title: 'deepseek', url: '', isHistory: true),
-    SearchItem(title: 'flutter awesome', url: '', isHistory: true),
-    SearchItem(title: 'ai studio', url: '', isHistory: true),
-    SearchItem(title: 'bir proxy satın al', url: '', isHistory: true),
-    SearchItem(title: 'shamiko github', url: '', isHistory: true),
-    SearchItem(title: 'flutter gem', url: '', isHistory: true),
-  ];
+ final List<SearchItem> _searchHistory = [
+ SearchItem(title: 'figma anime streaming', url: '', isHistory: true),
+ SearchItem(title: 'gemini', url: '', isHistory: true),
+ SearchItem(title: 'deepseek', url: '', isHistory: true),
+ SearchItem(title: 'flutter awesome', url: '', isHistory: true),
+ SearchItem(title: 'ai studio', url: '', isHistory: true),
+ SearchItem(title: 'bir proxy satın al', url: '', isHistory: true),
+ SearchItem(title: 'shamiko github', url: '', isHistory: true),
+ SearchItem(title: 'flutter gem', url: '', isHistory: true),
+ ];
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _focusNode.requestFocus(); // Auto-focus on text field
-    });
-  }
+ List<String> _suggestions = [];
+ Timer? _debounce;
 
-  @override
-  void dispose() {
-    _searchController.dispose();
-    _focusNode.dispose();
-    super.dispose();
-  }
+ @override
+ void initState() {
+ super.initState();
+ WidgetsBinding.instance.addPostFrameCallback((_) => _focusNode.requestFocus());
+ _searchController.addListener(_onQueryChanged);
+ }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight),
-        child: _buildCustomSearchAppBar(),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.zero,
-              itemCount: _searchHistory.length,
-              itemBuilder: (context, index) {
-                return SearchResultTile(item: _searchHistory[index]);
-              },
-            ),
-          ),
-          // Placeholder for keyboard - not a real keyboard
-          _buildMockKeyboard(),
-        ],
-      ),
-    );
-  }
+ @override
+ void dispose() {
+ _debounce?.cancel();
+ _searchController.removeListener(_onQueryChanged);
+ _searchController.dispose();
+ _focusNode.dispose();
+ super.dispose();
+ }
 
-  Widget _buildCustomSearchAppBar() {
-    return AppBar(
-      backgroundColor: Colors.white,
-      elevation: 0,
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: kGoogleChromeDarkGrey),
-        onPressed: () => Navigator.pop(context),
-      ),
-      titleSpacing: 0,
-      title: Container(
-        height: kToolbarHeight * 0.7,
-        padding: const EdgeInsets.symmetric(horizontal: kSmallPadding),
-        decoration: BoxDecoration(
-          color: kGoogleChromeGrey,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.search, color: kGoogleChromeMediumGrey, size: 20),
-            const SizedBox(width: kSmallPadding),
-            Expanded(
-              child: TextField(
-                controller: _searchController,
-                focusNode: _focusNode,
-                decoration: InputDecoration(
-                  hintText: 'Search Google or type URL',
-                  hintStyle: const TextStyle(color: kGoogleChromeMediumGrey),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.zero,
-                  isDense: true,
-                ),
-                style: const TextStyle(color: kGoogleChromeDarkGrey, fontSize: 16),
-                onSubmitted: (query) {
-  if (query.isNotEmpty) {
-    AppRouter.navigateTo(context, AppRouter.searchResultsRoute, arguments: query);
-  }
+ void _onQueryChanged() {
+ _debounce?.cancel();
+ _debounce = Timer(const Duration(milliseconds: 250), () {
+ _fetchSuggestions(_searchController.text);
+ });
+ }
 
-                },
-              ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.close, color: kGoogleChromeMediumGrey, size: 20),
-              onPressed: () {
-                _searchController.clear();
-              },
-            ),
-          ],
-        ),
-      ),
-      actions: [
-        IconButton(
-          icon: const Icon(kMicIcon, color: kGoogleChromeDarkGrey),
-          onPressed: () {
-            print('Mic pressed');
-          },
-        ),
-        const SizedBox(width: kSmallPadding),
-      ],
-    );
-  }
+ Future<void> _fetchSuggestions(String q) async {
+ final query = q.trim();
+ if (query.isEmpty) {
+ setState(() => _suggestions = []);
+ return;
+ }
+ try {
+ final uri = Uri.parse('https://suggestqueries.google.com/complete/search?client=firefox&q=${Uri.encodeQueryComponent(query)}');
+ final resp = await http.get(uri);
+ if (resp.statusCode == 200) {
+ final data = jsonDecode(utf8.decode(resp.bodyBytes));
+ final List<dynamic> arr = data[1] as List<dynamic>;
+ setState(() => _suggestions = arr.map((e) => e.toString()).toList());
+ }
+ } catch (_) {
+ // ignore errors
+ }
+ }
 
+ @override
+ Widget build(BuildContext context) {
+ return Scaffold(
+ appBar: PreferredSize(
+ preferredSize: const Size.fromHeight(kToolbarHeight),
+ child: _buildCustomSearchAppBar(),
+ ),
+ body: Column(
+ children: [
+ Expanded(
+ child: ListView.builder(
+ padding: EdgeInsets.zero,
+ itemCount: _suggestions.isNotEmpty ? _suggestions.length : _searchHistory.length,
+ itemBuilder: (context, index) {
+ if (_suggestions.isNotEmpty) {
+ final s = _suggestions[index];
+ return ListTile(
+ leading: const Icon(Icons.search, color: kGoogleChromeMediumGrey),
+ title: Text(s, maxLines: 1, overflow: TextOverflow.ellipsis),
+ onTap: () => AppRouter.navigateTo(context, AppRouter.searchResultsRoute, arguments: s),
+ );
+ } else {
+ return SearchResultTile(item: _searchHistory[index]);
+ }
+ },
+ ),
+ ),
+ ],
+ ),
+ );
+ }
 
-  Widget _buildMockKeyboard() {
-    return Container(
-      color: Colors.grey[200],
-      padding: const EdgeInsets.all(kSmallPadding),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildKeyboardIcon(Icons.grid_view),
-              _buildKeyboardIcon(Icons.gif_box_outlined),
-              _buildKeyboardIcon(Icons.content_copy),
-              _buildKeyboardIcon(Icons.settings_outlined),
-              _buildKeyboardIcon(Icons.palette_outlined),
-              _buildKeyboardIcon(Icons.emoji_emotions_outlined),
-              _buildKeyboardIcon(Icons.mic_none),
-            ],
-          ),
-          const SizedBox(height: kSmallPadding),
-          // Simplified number row
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: List.generate(10, (index) => _buildKey('${index == 9 ? 0 : index + 1}')),
-          ),
-          const SizedBox(height: kSmallPadding / 2),
-          // Simplified letter rows (only A-Z for brevity)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: 'qwertyuiop'.split('').map((e) => _buildKey(e)).toList(),
-          ),
-          const SizedBox(height: kSmallPadding / 2),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildShiftKey(),
-              ...('asdfghjkl'.split('').map((e) => _buildKey(e)).toList()),
-              _buildDeleteKey(),
-            ],
-          ),
-          const SizedBox(height: kSmallPadding / 2),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildSpecialKey('?123'),
-              _buildSpecialKey('/'),
-              _buildSpecialKey('🌎'),
-              _buildSpecialKey('English'),
-              _buildSpecialKey('➡️'),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+ Widget _buildCustomSearchAppBar() {
+ return AppBar(
+ backgroundColor: Colors.white,
+ elevation: 0,
+ leading: IconButton(
+ icon: const Icon(Icons.arrow_back, color: kGoogleChromeDarkGrey),
+ onPressed: () => Navigator.pop(context),
+ ),
+ titleSpacing: 0,
+ title: Container(
+ height: kToolbarHeight * 0.7,
+ padding: const EdgeInsets.symmetric(horizontal: kSmallPadding),
+ decoration: BoxDecoration(color: kGoogleChromeGrey, borderRadius: BorderRadius.circular(20)),
+ child: Row(
+ children: [
+ const Icon(Icons.search, color: kGoogleChromeMediumGrey, size: 20),
+ const SizedBox(width: kSmallPadding),
+ Expanded(
+ child: TextField(
+ controller: _searchController,
+ focusNode: _focusNode,
+ decoration: const InputDecoration(
+ hintText: 'Search Google or type URL',
+ hintStyle: TextStyle(color: kGoogleChromeMediumGrey),
+ border: InputBorder.none,
+ contentPadding: EdgeInsets.zero,
+ isDense: true,
+ ),
+ style: const TextStyle(color: kGoogleChromeDarkGrey, fontSize: 16),
+ onSubmitted: (query) {
+ if (query.isNotEmpty) AppRouter.navigateTo(context, AppRouter.searchResultsRoute, arguments: query);
+ },
+ ),
+ ),
+ IconButton(
+ icon: const Icon(Icons.close, color: kGoogleChromeMediumGrey, size: 20),
+ onPressed: () {
+ _searchController.clear();
+ setState(() => _suggestions = []);
+ },
+ ),
+ ],
+ ),
+ ),
+ actions: [
+ IconButton(
+ icon: const Icon(kMicIcon, color: kGoogleChromeDarkGrey),
+ onPressed: () {},
+ ),
+ const SizedBox(width: kSmallPadding),
+ ],
+ );
+ }
 
-  Widget _buildKey(String text) {
-    return Container(
-      width: 32,
-      height: 40,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(4),
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        text.toUpperCase(),
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-      ),
-    );
-  }
-
-  Widget _buildKeyboardIcon(IconData icon) {
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Icon(icon, color: Colors.grey[700], size: 20),
-    );
-  }
-
-  Widget _buildShiftKey() {
-    return Container(
-      width: 50,
-      height: 40,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: const Icon(Icons.arrow_upward, size: 20),
-    );
-  }
-
-  Widget _buildDeleteKey() {
-    return Container(
-      width: 50,
-      height: 40,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: const Icon(Icons.backspace_outlined, size: 20),
-    );
-  }
-
-  Widget _buildSpecialKey(String text) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      height: 40,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(4),
-      ),
-      alignment: Alignment.center,
-      child: Text(text, style: const TextStyle(fontSize: 14)),
-    );
-  }
+ // (Mock keyboard left unchanged)
 }

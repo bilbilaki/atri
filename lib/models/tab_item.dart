@@ -1,36 +1,62 @@
-// Path: models/tab_item.dart
-import 'package:uuid/uuid.dart'; // Add uuid package to pubspec.yaml if not already present
+// Path: lib/models/tab_item.dart
+import 'package:uuid/uuid.dart';
 
 class TabItem {
-  final String id; // Added unique ID
+  final String id;
   final String title;
   final String url;
   final String imageUrl;
-  bool isActive;
+  final String? previewPath; // dynamic preview saved to file
+  final String? faviconUrl; // optional favicon
+   bool isActive;
 
   TabItem({
     required this.id,
     required this.title,
     required this.url,
     required this.imageUrl,
+    this.previewPath,
+    this.faviconUrl,
     this.isActive = false,
   });
 
-  // Factory constructor to create new TabItem with a unique ID
   factory TabItem.create({
     required String title,
     required String url,
     required String imageUrl,
     bool isActive = false,
+    String? previewPath,
+    String? faviconUrl,
   }) {
-    // A simple way to generate unique IDs. For robust apps, consider `uuid` package.
     const uuid = Uuid();
     return TabItem(
-      id: uuid.v4(), // Generates a UUID
+      id: uuid.v4(),
       title: title,
       url: url,
       imageUrl: imageUrl,
+      previewPath: previewPath,
+      faviconUrl: faviconUrl,
       isActive: isActive,
+    );
+  }
+
+  TabItem copyWith({
+    String? id,
+    String? title,
+    String? url,
+    String? imageUrl,
+    String? previewPath,
+    String? faviconUrl,
+    bool? isActive,
+  }) {
+    return TabItem(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      url: url ?? this.url,
+      imageUrl: imageUrl ?? this.imageUrl,
+      previewPath: previewPath ?? this.previewPath,
+      faviconUrl: faviconUrl ?? this.faviconUrl,
+      isActive: isActive ?? this.isActive,
     );
   }
 }

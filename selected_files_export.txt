@@ -1,0 +1,3336 @@
+--- Selected Files Export ---
+Export Date: 2025-08-19T22:01:05.709869
+
+--- File Info ---
+File Name: bookmark_item.dart
+File Path: /home/nso/Documents/AioFl/atri/lib/models/bookmark_item.dart
+File Extension: .dart
+Content Length: 1179 characters
+
+--- File Content ---
+import 'package:flutter/foundation.dart';
+
+@immutable
+class Bookmark {
+  final int? id;
+  final String title;
+  final String url;
+  final String? faviconUrl;
+  final DateTime createdAt;
+
+  const Bookmark({
+    this.id,
+    required this.title,
+    required this.url,
+    this.faviconUrl,
+    required this.createdAt,
+  });
+
+  Bookmark copyWith({
+    int? id,
+    String? title,
+    String? url,
+    String? faviconUrl,
+    DateTime? createdAt,
+  }) {
+    return Bookmark(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      url: url ?? this.url,
+      faviconUrl: faviconUrl ?? this.faviconUrl,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  factory Bookmark.fromMap(Map<String, Object?> map) => Bookmark(
+        id: map['id'] as int?,
+        title: map['title'] as String,
+        url: map['url'] as String,
+        faviconUrl: map['favicon_url'] as String?,
+        createdAt: DateTime.fromMillisecondsSinceEpoch(map['created_at'] as int),
+      );
+
+  Map<String, Object?> toMap() => {
+        'id': id,
+        'title': title,
+        'url': url,
+        'favicon_url': faviconUrl,
+        'created_at': createdAt.millisecondsSinceEpoch,
+      };
+}
+
+--- End File ---
+
+--- File Info ---
+File Name: search_item.dart
+File Path: /home/nso/Documents/AioFl/atri/lib/models/search_item.dart
+File Extension: .dart
+Content Length: 403 characters
+
+--- File Content ---
+
+class SearchItem {
+  final String title;
+  final String url;
+  final String? description;
+  final String? imageUrl;
+  final String? price; // For items like "Animax UI Kit"
+  final bool isHistory; // To differentiate history from search results
+
+  SearchItem({
+    required this.title,
+    required this.url,
+    this.description,
+    this.imageUrl,
+    this.price,
+    this.isHistory = false,
+  });
+}
+
+
+--- End File ---
+
+--- File Info ---
+File Name: history_item.dart
+File Path: /home/nso/Documents/AioFl/atri/lib/models/history_item.dart
+File Extension: .dart
+Content Length: 1190 characters
+
+--- File Content ---
+import 'package:flutter/foundation.dart';
+
+@immutable
+class HistoryItem {
+  final int? id;
+  final String? title;
+  final String url;
+  final String? faviconUrl;
+  final DateTime visitedAt;
+
+  const HistoryItem({
+    this.id,
+    this.title,
+    required this.url,
+    this.faviconUrl,
+    required this.visitedAt,
+  });
+
+  HistoryItem copyWith({
+    int? id,
+    String? title,
+    String? url,
+    String? faviconUrl,
+    DateTime? visitedAt,
+  }) {
+    return HistoryItem(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      url: url ?? this.url,
+      faviconUrl: faviconUrl ?? this.faviconUrl,
+      visitedAt: visitedAt ?? this.visitedAt,
+    );
+  }
+
+  factory HistoryItem.fromMap(Map<String, Object?> map) => HistoryItem(
+        id: map['id'] as int?,
+        title: map['title'] as String?,
+        url: map['url'] as String,
+        faviconUrl: map['favicon_url'] as String?,
+        visitedAt: DateTime.fromMillisecondsSinceEpoch(map['visited_at'] as int),
+      );
+
+  Map<String, Object?> toMap() => {
+        'id': id,
+        'title': title,
+        'url': url,
+        'favicon_url': faviconUrl,
+        'visited_at': visitedAt.millisecondsSinceEpoch,
+      };
+}
+
+--- End File ---
+
+--- File Info ---
+File Name: tab_item.dart
+File Path: /home/nso/Documents/AioFl/atri/lib/models/tab_item.dart
+File Extension: .dart
+Content Length: 885 characters
+
+--- File Content ---
+// Path: models/tab_item.dart
+import 'package:uuid/uuid.dart'; // Add uuid package to pubspec.yaml if not already present
+
+class TabItem {
+  final String id; // Added unique ID
+  final String title;
+  final String url;
+  final String imageUrl;
+  bool isActive;
+
+  TabItem({
+    required this.id,
+    required this.title,
+    required this.url,
+    required this.imageUrl,
+    this.isActive = false,
+  });
+
+  // Factory constructor to create new TabItem with a unique ID
+  factory TabItem.create({
+    required String title,
+    required String url,
+    required String imageUrl,
+    bool isActive = false,
+  }) {
+    // A simple way to generate unique IDs. For robust apps, consider `uuid` package.
+    const uuid = Uuid();
+    return TabItem(
+      id: uuid.v4(), // Generates a UUID
+      title: title,
+      url: url,
+      imageUrl: imageUrl,
+      isActive: isActive,
+    );
+  }
+}
+
+--- End File ---
+
+--- File Info ---
+File Name: downlooad_item.dart
+File Path: /home/nso/Documents/AioFl/atri/lib/models/downlooad_item.dart
+File Extension: .dart
+Content Length: 1929 characters
+
+--- File Content ---
+import 'package:flutter/foundation.dart';
+
+enum DownloadStatus { pending, downloading, completed, failed }
+
+extension DownloadStatusCodec on DownloadStatus {
+  int get asInt => index;
+  static DownloadStatus fromInt(int value) =>
+      DownloadStatus.values[value.clamp(0, DownloadStatus.values.length - 1)];
+}
+
+@immutable
+class DownloadItem {
+  final int? id;
+  final String fileName;
+  final String url;
+  final String savePath;
+  final DownloadStatus status;
+  final double progress; // 0.0 to 1.0
+  final DateTime createdAt;
+
+  const DownloadItem({
+    this.id,
+    required this.fileName,
+    required this.url,
+    required this.savePath,
+    required this.status,
+    required this.progress,
+    required this.createdAt,
+  });
+
+  DownloadItem copyWith({
+    int? id,
+    String? fileName,
+    String? url,
+    String? savePath,
+    DownloadStatus? status,
+    double? progress,
+    DateTime? createdAt,
+  }) {
+    return DownloadItem(
+      id: id ?? this.id,
+      fileName: fileName ?? this.fileName,
+      url: url ?? this.url,
+      savePath: savePath ?? this.savePath,
+      status: status ?? this.status,
+      progress: progress ?? this.progress,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  factory DownloadItem.fromMap(Map<String, Object?> map) => DownloadItem(
+        id: map['id'] as int?,
+        fileName: map['file_name'] as String,
+        url: map['url'] as String,
+        savePath: map['save_path'] as String,
+        status: DownloadStatusCodec.fromInt(map['status'] as int),
+        progress: (map['progress'] as num).toDouble(),
+        createdAt: DateTime.fromMillisecondsSinceEpoch(map['created_at'] as int),
+      );
+
+  Map<String, Object?> toMap() => {
+        'id': id,
+        'file_name': fileName,
+        'url': url,
+        'save_path': savePath,
+        'status': status.asInt,
+        'progress': progress,
+        'created_at': createdAt.millisecondsSinceEpoch,
+      };
+}
+
+--- End File ---
+
+--- File Info ---
+File Name: daos.dart
+File Path: /home/nso/Documents/AioFl/atri/lib/data/local/daos.dart
+File Extension: .dart
+Content Length: 5779 characters
+
+--- File Content ---
+import 'package:atri/models/bookmark_item.dart';
+import 'package:atri/models/downlooad_item.dart';
+import 'package:sqflite/sqflite.dart';
+import 'app_database.dart';
+import '../../models/history_item.dart';
+
+class DownloadDao {
+  static Future<int> insert(DownloadItem item) async {
+    final db = await AppDatabase.instance.database;
+    return await db.insert('downloads', item.toMap()..remove('id'));
+  }
+
+  static Future<DownloadItem?> getById(int id) async {
+    final db = await AppDatabase.instance.database;
+    final rows = await db.query('downloads',
+        where: 'id = ?', whereArgs: [id], limit: 1);
+    if (rows.isEmpty) return null;
+    return DownloadItem.fromMap(rows.first);
+  }
+
+  static Future<List<DownloadItem>> getAll({
+    int? limit,
+    int? offset,
+    List<DownloadStatus>? statuses,
+  }) async {
+    final db = await AppDatabase.instance.database;
+    String? where;
+    List<Object?>? whereArgs;
+    if (statuses != null && statuses.isNotEmpty) {
+      final qs = List.filled(statuses.length, '?').join(',');
+      where = 'status IN ($qs)';
+      whereArgs = statuses.map((s) => s.index).toList();
+    }
+    final rows = await db.query(
+      'downloads',
+      where: where,
+      whereArgs: whereArgs,
+      orderBy: 'created_at DESC',
+      limit: limit,
+      offset: offset,
+    );
+    return rows.map(DownloadItem.fromMap).toList();
+  }
+
+  static Future<int> update(DownloadItem item) async {
+    if (item.id == null) {
+      throw ArgumentError('DownloadItem.id is required for update');
+    }
+    final db = await AppDatabase.instance.database;
+    return await db.update(
+      'downloads',
+      item.toMap()..remove('id'),
+      where: 'id = ?',
+      whereArgs: [item.id],
+    );
+  }
+
+  static Future<int> updateProgress({
+    required int id,
+    required double progress,
+    required DownloadStatus status,
+  }) async {
+    final db = await AppDatabase.instance.database;
+    return await db.update(
+      'downloads',
+      {
+        'progress': progress,
+        'status': status.index,
+      },
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  static Future<int> delete(int id) async {
+    final db = await AppDatabase.instance.database;
+    return await db.delete('downloads', where: 'id = ?', whereArgs: [id]);
+  }
+
+  static Future<int> deleteAllWithStatus(DownloadStatus status) async {
+    final db = await AppDatabase.instance.database;
+    return await db
+        .delete('downloads', where: 'status = ?', whereArgs: [status.index]);
+  }
+}
+class HistoryDao {
+  static Future<int> insert(HistoryItem item) async {
+    final db = await AppDatabase.instance.database;
+    return await db.insert('history', item.toMap()..remove('id'));
+  }
+
+  static Future<HistoryItem?> getById(int id) async {
+    final db = await AppDatabase.instance.database;
+    final rows =
+        await db.query('history', where: 'id = ?', whereArgs: [id], limit: 1);
+    if (rows.isEmpty) return null;
+    return HistoryItem.fromMap(rows.first);
+  }
+
+  static Future<List<HistoryItem>> getAll({
+    int? limit,
+    int? offset,
+  }) async {
+    final db = await AppDatabase.instance.database;
+    final rows = await db.query(
+      'history',
+      orderBy: 'visited_at DESC',
+      limit: limit,
+      offset: offset,
+    );
+    return rows.map(HistoryItem.fromMap).toList();
+  }
+
+  static Future<int> delete(int id) async {
+    final db = await AppDatabase.instance.database;
+    return await db.delete('history', where: 'id = ?', whereArgs: [id]);
+  }
+
+  static Future<int> clear() async {
+    final db = await AppDatabase.instance.database;
+    return await db.delete('history');
+  }
+
+  static Future<List<HistoryItem>> findByUrl(String url,
+      {int? limit, int? offset}) async {
+    final db = await AppDatabase.instance.database;
+    final rows = await db.query(
+      'history',
+      where: 'url = ?',
+      whereArgs: [url],
+      orderBy: 'visited_at DESC',
+      limit: limit,
+      offset: offset,
+    );
+    return rows.map(HistoryItem.fromMap).toList();
+  }
+}
+class BookmarkDao {
+  static Future<int> insert(Bookmark bookmark) async {
+    final db = await AppDatabase.instance.database;
+    return await db.insert(
+      'bookmarks',
+      bookmark.toMap()..remove('id'),
+      conflictAlgorithm: ConflictAlgorithm.abort, // url is UNIQUE
+    );
+  }
+
+  static Future<Bookmark?> getById(int id) async {
+    final db = await AppDatabase.instance.database;
+    final rows =
+        await db.query('bookmarks', where: 'id = ?', whereArgs: [id], limit: 1);
+    if (rows.isEmpty) return null;
+    return Bookmark.fromMap(rows.first);
+  }
+
+  static Future<Bookmark?> getByUrl(String url) async {
+    final db = await AppDatabase.instance.database;
+    final rows = await db.query('bookmarks',
+        where: 'url = ?', whereArgs: [url], limit: 1);
+    if (rows.isEmpty) return null;
+    return Bookmark.fromMap(rows.first);
+  }
+
+  static Future<List<Bookmark>> getAll({int? limit, int? offset}) async {
+    final db = await AppDatabase.instance.database;
+    final rows = await db.query(
+      'bookmarks',
+      orderBy: 'created_at DESC',
+      limit: limit,
+      offset: offset,
+    );
+    return rows.map(Bookmark.fromMap).toList();
+  }
+
+  static Future<int> update(Bookmark bookmark) async {
+    if (bookmark.id == null) {
+      throw ArgumentError('Bookmark.id is required for update');
+    }
+    final db = await AppDatabase.instance.database;
+    return await db.update(
+      'bookmarks',
+      bookmark.toMap()..remove('id'),
+      where: 'id = ?',
+      whereArgs: [bookmark.id],
+      conflictAlgorithm: ConflictAlgorithm.abort,
+    );
+  }
+
+  static Future<int> delete(int id) async {
+    final db = await AppDatabase.instance.database;
+    return await db.delete('bookmarks', where: 'id = ?', whereArgs: [id]);
+  }
+}
+
+--- End File ---
+
+--- File Info ---
+File Name: app_database.dart
+File Path: /home/nso/Documents/AioFl/atri/lib/data/local/app_database.dart
+File Extension: .dart
+Content Length: 2611 characters
+
+--- File Content ---
+import 'dart:async';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart' as p;
+
+class AppDatabase {
+  AppDatabase._internal();
+  static final AppDatabase instance = AppDatabase._internal();
+
+  static const _dbName = 'app_data.db';
+  static const _dbVersion = 1;
+
+  Database? _db;
+
+  Future<Database> get database async {
+    if (_db != null) return _db!;
+    _db = await _open();
+    return _db!;
+  }
+
+  Future<Database> _open() async {
+    final dbPath = await getDatabasesPath();
+    final path = p.join(dbPath, _dbName);
+    return await openDatabase(
+      path,
+      version: _dbVersion,
+      onCreate: (db, version) async {
+        final batch = db.batch();
+
+        batch.execute('''
+ CREATE TABLE bookmarks (
+ id INTEGER PRIMARY KEY AUTOINCREMENT,
+ title TEXT NOT NULL,
+ url TEXT NOT NULL UNIQUE,
+ favicon_url TEXT,
+ created_at INTEGER NOT NULL
+ )
+ ''');
+        batch.execute(
+            'CREATE INDEX idx_bookmarks_created_at ON bookmarks (created_at DESC)');
+
+        batch.execute('''
+ CREATE TABLE history (
+ id INTEGER PRIMARY KEY AUTOINCREMENT,
+ title TEXT,
+ url TEXT NOT NULL,
+ favicon_url TEXT,
+ visited_at INTEGER NOT NULL
+ )
+ ''');
+        batch.execute(
+            'CREATE INDEX idx_history_visited_at ON history (visited_at DESC)');
+        batch.execute('CREATE INDEX idx_history_url ON history (url)');
+
+        batch.execute('''
+ CREATE TABLE downloads (
+ id INTEGER PRIMARY KEY AUTOINCREMENT,
+ file_name TEXT NOT NULL,
+ url TEXT NOT NULL,
+ save_path TEXT NOT NULL,
+ status INTEGER NOT NULL,
+ progress REAL NOT NULL,
+ created_at INTEGER NOT NULL
+ )
+ ''');
+        batch.execute(
+            'CREATE INDEX idx_downloads_status ON downloads (status)');
+        batch.execute(
+            'CREATE INDEX idx_downloads_created_at ON downloads (created_at DESC)');
+
+        await batch.commit(noResult: true);
+      },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        final batch = db.batch();
+        // Example future migrations:
+        // if (oldVersion < 2) {
+        // batch.execute('ALTER TABLE bookmarks ADD COLUMN some_new_col TEXT');
+        // }
+        await batch.commit(noResult: true);
+      },
+    );
+  }
+
+  Future<void> close() async {
+    final db = _db;
+    if (db != null && db.isOpen) {
+      await db.close();
+      _db = null;
+    }
+  }
+
+  // Optional utility for clearing all data (e.g., for testing)
+  Future<void> clearAll() async {
+    final db = await database;
+    final batch = db.batch();
+    batch.delete('bookmarks');
+    batch.delete('history');
+    batch.delete('downloads');
+    await batch.commit(noResult: true);
+  }
+}
+
+--- End File ---
+
+--- File Info ---
+File Name: content_box.dart
+File Path: /home/nso/Documents/AioFl/atri/lib/widgets/content_box.dart
+File Extension: .dart
+Content Length: 1031 characters
+
+--- File Content ---
+import 'package:flutter/material.dart';
+
+class ContentDisplayBox extends StatelessWidget {
+  final String title;
+  final String content;
+
+  const ContentDisplayBox({
+    super.key,
+    required this.title,
+    required this.content,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey.shade400),
+                borderRadius: BorderRadius.circular(8),
+                color: Colors.grey.shade50,
+              ),
+              child: SingleChildScrollView(child: Text(content, style: const TextStyle(fontFamily: 'monospace'))),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+--- End File ---
+
+--- File Info ---
+File Name: search_result_tile.dart
+File Path: /home/nso/Documents/AioFl/atri/lib/widgets/search_result_tile.dart
+File Extension: .dart
+Content Length: 5440 characters
+
+--- File Content ---
+
+import 'package:atri/models/search_item.dart';
+import 'package:atri/utils/app_constants.dart';
+import 'package:atri/utils/app_router.dart';
+import 'package:flutter/material.dart';
+
+class SearchResultTile extends StatelessWidget {
+  final SearchItem item;
+
+  const SearchResultTile({super.key, required this.item});
+
+  @override
+  Widget build(BuildContext context) {
+    if (item.isHistory) {
+      return _buildHistoryTile(context);
+    } else {
+      return _buildSearchResultTile(context);
+    }
+  }
+
+  Widget _buildHistoryTile(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        print('Tapped history: ${item.title}');
+        // Simulate navigating to search results for this query
+        Navigator.pushReplacementNamed(
+            context,
+            '/search_results',
+            arguments: item.title // Pass the search query
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+            horizontal: kMediumPadding, vertical: kSmallPadding),
+        child: Row(
+          children: [
+            const Icon(kHistoryIcon, color: kGoogleChromeMediumGrey),
+            const SizedBox(width: kMediumPadding),
+            Expanded(
+              child: Text(
+                item.title,
+                style: const TextStyle(color: kGoogleChromeDarkGrey, fontSize: 16),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const Icon(Icons.north_west, color: kGoogleChromeMediumGrey, size: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSearchResultTile(BuildContext context) {
+    return Card(
+      elevation: kCardElevation,
+      margin: const EdgeInsets.symmetric(horizontal: kMediumPadding, vertical: kSmallPadding / 2),
+      shape: RoundedRectangleBorder(borderRadius: kCardBorderRadius),
+      child: InkWell(
+onTap: () {
+  Navigator.pushNamed(
+    context,
+    AppRouter.searchResultsRoute, // Use the defined route name
+    arguments: (item.url.isNotEmpty ? item.url : item.title), // Pass the URL or title
+  );
+},
+        child: Padding(
+          padding: const EdgeInsets.all(kMediumPadding),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (item.imageUrl == null)
+                CircleAvatar(
+                  radius: 12,
+                  backgroundColor: kGoogleChromeBlue.withOpacity(0.1),
+                  child: const Icon(Icons.link, size: 16, color: kGoogleChromeBlue),
+                )
+              else
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: Image.asset(
+                    item.imageUrl!,
+                    width: 24,
+                    height: 24,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => CircleAvatar(
+                      radius: 12,
+                      backgroundColor: Colors.grey[200],
+                      child: const Icon(Icons.image_not_supported, size: 16, color: Colors.grey),
+                    ),
+                  ),
+                ),
+              const SizedBox(width: kSmallPadding),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.url,
+                      style: kUrlTextStyle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      item.title,
+                      style: kTitleTextStyle,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (item.description != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        item.description!,
+                        style: kDescriptionTextStyle,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                    if (item.price != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        item.price!,
+                        style: kTitleTextStyle.copyWith(color: kGoogleChromeDarkGrey),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(width: kSmallPadding),
+              if (item.imageUrl != null && item.imageUrl!.isNotEmpty && item.imageUrl!.contains('laptop'))
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: Image.asset(
+                    item.imageUrl!,
+                    width: 80,
+                    height: 80,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      width: 80, height: 80, color: Colors.grey[200],
+                      child: const Icon(Icons.image_not_supported, size: 30, color: Colors.grey),
+                    ),
+                  ),
+                )
+              else
+                const Icon(Icons.more_vert, color: kGoogleChromeMediumGrey),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+--- End File ---
+
+--- File Info ---
+File Name: app_bars.dart
+File Path: /home/nso/Documents/AioFl/atri/lib/widgets/app_bars.dart
+File Extension: .dart
+Content Length: 6820 characters
+
+--- File Content ---
+import 'package:atri/utils/app_constants.dart';
+import 'package:atri/utils/app_router.dart';
+import 'package:flutter/material.dart';
+import 'package:atri/widgets/chrome_popup_menu.dart';
+// --- Home Screen AppBar ---
+class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const HomeAppBar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.white,
+      elevation: 0,
+      leading: IconButton(
+        icon: const Icon(kHomeIcon, color: kGoogleChromeDarkGrey),
+        onPressed: () {
+          print('Home icon pressed');
+        },
+      ),
+      actions: [
+        CircleAvatar(
+          radius: 14, // Smaller radius for profile icon
+          backgroundColor: Colors.grey[300],
+          child: const Text('D', style: TextStyle(color: Colors.white, fontSize: 12)),
+        ),
+        const SizedBox(width: kSmallPadding),
+        GestureDetector(
+          onTap: () {
+            AppRouter.navigateTo(context, AppRouter.tabSwitcherRoute);
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(5),
+            ),
+            child: const Text(
+              '2',
+              style: TextStyle(color: kGoogleChromeDarkGrey, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+        const SizedBox(width: kSmallPadding),
+        ChromePopupMenuButton(),
+        const SizedBox(width: kSmallPadding),
+      ],
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+// --- Search Results / Search Input AppBar ---
+class SearchScreenAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final String urlOrSearchQuery;
+  final bool showGoogleIcon;
+  final bool isSearchInput; // If true, implies it's the search input screen
+
+  const SearchScreenAppBar({
+    super.key,
+    required this.urlOrSearchQuery,
+    this.showGoogleIcon = false,
+    this.isSearchInput = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.white,
+      elevation: 0,
+      leading: isSearchInput
+          ? IconButton(
+              icon: const Icon(Icons.arrow_back, color: kGoogleChromeDarkGrey),
+              onPressed: () => Navigator.pop(context),
+            )
+          : null, // No leading icon for search results
+      titleSpacing: isSearchInput ? 0 : null,
+      title: Container(
+        height: kToolbarHeight * 0.7, // Adjust height
+        padding: const EdgeInsets.symmetric(horizontal: kSmallPadding),
+        decoration: BoxDecoration(
+          color: kGoogleChromeGrey,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          children: [
+            if (showGoogleIcon)
+              const Padding(
+                padding: EdgeInsets.only(right: kSmallPadding / 2),
+                child: Icon(Icons.search, color: kGoogleChromeMediumGrey, size: 20),
+              ),
+            Expanded(
+              child: Text(
+                urlOrSearchQuery,
+                style: TextStyle(
+                  color: kGoogleChromeDarkGrey,
+                  fontSize: isSearchInput ? 16 : 14,
+                  fontWeight: isSearchInput ? FontWeight.normal : FontWeight.w400,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            if (isSearchInput)
+              const Icon(Icons.close, color: kGoogleChromeMediumGrey, size: 20),
+          ],
+        ),
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(kPlusIcon, color: kGoogleChromeDarkGrey),
+          onPressed: () {
+            print('New tab pressed');
+          },
+        ),
+        GestureDetector(
+          onTap: () {
+            AppRouter.navigateTo(context, AppRouter.tabSwitcherRoute);
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(5),
+            ),
+            child: const Text(
+              '2', // Placeholder tab count
+              style: TextStyle(color: kGoogleChromeDarkGrey, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+        const SizedBox(width: kSmallPadding),
+        ChromePopupMenuButton(),
+        const SizedBox(width: kSmallPadding),
+      ],
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+// --- Tab Switcher AppBar ---
+class TabSwitcherAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const TabSwitcherAppBar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.white,
+      elevation: 0,
+      leading: IconButton(
+        icon: const Icon(kPlusIcon, color: kGoogleChromeDarkGrey),
+        onPressed: () {
+          print('Add new tab pressed');
+        },
+      ),
+      title: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.grey[200],
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: const Text(
+          '1', // Placeholder tab count
+          style: TextStyle(color: kGoogleChromeDarkGrey, fontWeight: FontWeight.bold),
+        ),
+      ),
+      centerTitle: true,
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.grid_view, color: kGoogleChromeDarkGrey),
+          onPressed: () {
+            print('Grid view pressed');
+          },
+        ),
+        ChromePopupMenuButton(),
+        const SizedBox(width: kSmallPadding),
+      ],
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+// --- Settings AppBar ---
+class SettingsAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const SettingsAppBar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.white,
+      elevation: 0.5,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back, color: kGoogleChromeDarkGrey),
+        onPressed: () => Navigator.pop(context),
+      ),
+      title: const Text(
+        'Settings',
+        style: TextStyle(color: kGoogleChromeDarkGrey, fontWeight: FontWeight.normal),
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.help_outline, color: kGoogleChromeMediumGrey),
+          onPressed: () {
+            print('Help icon pressed');
+          },
+        ),
+      ],
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+
+--- End File ---
+
+--- File Info ---
+File Name: search_bar_widget.dart
+File Path: /home/nso/Documents/AioFl/atri/lib/widgets/search_bar_widget.dart
+File Extension: .dart
+Content Length: 3724 characters
+
+--- File Content ---
+
+
+import 'package:atri/utils/app_constants.dart';
+import 'package:atri/utils/app_router.dart';
+import 'package:flutter/material.dart';
+
+
+class HomeSearchBar extends StatelessWidget {
+  final String hintText;
+  final bool autofocus;
+  final bool showGoogleIcon;
+  final bool showMicIcon;
+  final VoidCallback? onTap; // Optional tap handler to navigate to search input screen
+
+  const HomeSearchBar({
+    super.key,
+    this.hintText = 'Search Google or type URL',
+    this.autofocus = false,
+    this.showGoogleIcon = true,
+    this.showMicIcon = true,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap ?? () {
+        // Default action: navigate to search input screen
+        AppRouter.navigateTo(context, AppRouter.searchInputRoute);
+      },
+      child: Container(
+        height: 50,
+        margin: const EdgeInsets.symmetric(horizontal: kMediumPadding),
+        padding: const EdgeInsets.symmetric(horizontal: kMediumPadding),
+        decoration: BoxDecoration(
+          color: kGoogleChromeGrey,
+          borderRadius: BorderRadius.circular(25),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              spreadRadius: 1,
+              blurRadius: 3,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            if (showGoogleIcon)
+              const Icon(Icons.search, color: kGoogleChromeMediumGrey), // Google icon
+            const SizedBox(width: kSmallPadding),
+            Expanded(
+              child: Text(
+                hintText,
+                style: const TextStyle(color: kGoogleChromeMediumGrey, fontSize: 16),
+              ),
+            ),
+            if (showMicIcon)
+              const Icon(kMicIcon, color: kGoogleChromeMediumGrey),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+class TabSwitcherSearchBar extends StatelessWidget {
+  final String hintText;
+  final TextEditingController? controller;
+  final VoidCallback? onTap;
+
+  const TabSwitcherSearchBar({
+    super.key,
+    this.hintText = 'Search your tabs',
+    this.controller,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap ?? () {
+        // Can optionally navigate to a dedicated tab search screen or just activate text field
+        print('Search tabs field tapped');
+      },
+      child: Container(
+        height: 48,
+        margin: const EdgeInsets.symmetric(horizontal: kMediumPadding),
+        padding: const EdgeInsets.symmetric(horizontal: kMediumPadding),
+        decoration: BoxDecoration(
+          color: kGoogleChromeGrey,
+          borderRadius: BorderRadius.circular(25),
+        ),
+        child: Row(
+          children: [
+            const Icon(kSearchIcon, color: kGoogleChromeMediumGrey),
+            const SizedBox(width: kSmallPadding),
+            Expanded(
+              child: TextField(
+                controller: controller,
+                decoration: InputDecoration(
+                  hintText: hintText,
+                  hintStyle: const TextStyle(color: kGoogleChromeMediumGrey),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.zero,
+                  isDense: true,
+                ),
+                style: const TextStyle(color: kGoogleChromeDarkGrey),
+                autofocus: false, // Don't autofocus here, as it's a tap gesture
+                readOnly: true, // Make it read-only to simulate tap-to-activate
+                onTap: onTap, // Ensure the onTap also works on the TextField
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+--- End File ---
+
+--- File Info ---
+File Name: tab_preview_card.dart
+File Path: /home/nso/Documents/AioFl/atri/lib/widgets/tab_preview_card.dart
+File Extension: .dart
+Content Length: 2918 characters
+
+--- File Content ---
+import 'package:atri/models/tab_item.dart';
+import 'package:atri/utils/app_constants.dart';
+import 'package:flutter/material.dart';
+
+class TabPreviewCard extends StatelessWidget {
+  final TabItem tab;
+  final VoidCallback onTap;
+  final VoidCallback onClose;
+
+  const TabPreviewCard({
+    super.key,
+    required this.tab,
+    required this.onTap,
+    required this.onClose,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: kCardElevation,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      clipBehavior: Clip.antiAlias,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              color: Colors.grey[100],
+              padding: const EdgeInsets.all(kSmallPadding / 2),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 8,
+                    backgroundColor: kGoogleChromeBlue.withOpacity(0.1),
+                    child: const Icon(Icons.search,
+                        size: 12, color: kGoogleChromeBlue),
+                  ),
+                  const SizedBox(width: kSmallPadding / 2),
+                  Expanded(
+                    child: Text(
+                      tab.title,
+                      style: const TextStyle(
+                          fontSize: 12, color: kGoogleChromeDarkGrey),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  InkWell(
+                    onTap: onClose,
+                    child: const Icon(Icons.close,
+                        size: 16, color: kGoogleChromeMediumGrey),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Container(
+                color: Colors.white,
+                child: Image.asset(
+                  tab.imageUrl,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: double.infinity,
+                  errorBuilder: (context, error, stackTrace) => Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.broken_image,
+                            size: 40, color: kGoogleChromeMediumGrey),
+                        Text(
+                          'No preview',
+                          style: kDescriptionTextStyle.copyWith(fontSize: 12),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Original Imports/Constants (assuming these exist in your project)
+// Path: utils/app_constants.dart
+
+
+--- End File ---
+
+--- File Info ---
+File Name: draggable_closable_tab_bar.dart
+File Path: /home/nso/Documents/AioFl/atri/lib/widgets/draggable_closable_tab_bar.dart
+File Extension: .dart
+Content Length: 4189 characters
+
+--- File Content ---
+// Path: draggable_closable_tab_bar.dart
+import 'package:flutter/material.dart';
+
+// A simple data model to represent a tab's essential properties for the bar
+class TabData {
+  final String id;
+  String title;
+  bool isSelected;
+
+  TabData({required this.id, required this.title, this.isSelected = false});
+}
+
+// Widget for displaying an individual draggable, selectable, and closable tab
+class _TabChip extends StatelessWidget {
+  const _TabChip({
+    required this.title,
+    required this.selected,
+    required this.onSelect,
+    required this.onClose,
+  });
+
+  final String title;
+  final bool selected;
+  final VoidCallback onSelect;
+  final VoidCallback onClose;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onSelect,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        decoration: BoxDecoration(
+          color: selected
+              ? Theme.of(context).colorScheme.surface
+              : Theme.of(context).colorScheme.surfaceVariant,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: Theme.of(context).dividerColor.withOpacity(0.5),
+            width: 0.5,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Drag indicator icon
+            const Icon(Icons.drag_indicator, size: 16),
+            const SizedBox(width: 6),
+            // Tab title
+            Flexible( // Use Flexible to prevent overflow
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 6),
+            // Close button
+            InkWell(
+              onTap: onClose,
+              child: const Icon(Icons.close, size: 16),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// The main widget providing draggable, selectable, and closable tabs horizontally
+class DraggableClosableTabBar extends StatefulWidget {
+  final List<TabData> tabs;
+  final ValueChanged<String> onTabSelected; // Callback when a tab is selected (tabId)
+  final Function(int oldIndex, int newIndex) onTabReordered; // Callback when tabs are reordered
+  final ValueChanged<String> onTabClosed; // Callback when a tab's close button is pressed (tabId)
+  final double height; // Height of the tab bar
+
+  const DraggableClosableTabBar({
+    super.key,
+    required this.tabs,
+    required this.onTabSelected,
+    required this.onTabReordered,
+    required this.onTabClosed,
+    this.height = 48.0,
+  });
+
+  @override
+  State<DraggableClosableTabBar> createState() => _DraggableClosableTabBarState();
+}
+
+class _DraggableClosableTabBarState extends State<DraggableClosableTabBar> {
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: widget.height,
+      child: ReorderableListView.builder(
+        scrollDirection: Axis.horizontal,
+        buildDefaultDragHandles: false, // Custom drag handles are provided by _TabChip
+        onReorder: (oldIndex, newIndex) {
+          // Adjust newIndex if moving to a position later in the list
+          if (newIndex > oldIndex) {
+            newIndex -= 1;
+          }
+          widget.onTabReordered(oldIndex, newIndex);
+        },
+        itemCount: widget.tabs.length,
+        itemBuilder: (ctx, i) {
+          final tab = widget.tabs[i];
+          return ReorderableDragStartListener(
+            key: ValueKey(tab.id), // Unique key for each reorderable item
+            index: i,
+            child: Padding(
+              padding: const EdgeInsets.only(
+                left: 6,
+                right: 6,
+                top: 6,
+                bottom: 8,
+              ),
+              child: _TabChip(
+                title: tab.title,
+                selected: tab.isSelected,
+                onSelect: () => widget.onTabSelected(tab.id),
+                onClose: () => widget.onTabClosed(tab.id),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+--- End File ---
+
+--- File Info ---
+File Name: chrome_popup_menu.dart
+File Path: /home/nso/Documents/AioFl/atri/lib/widgets/chrome_popup_menu.dart
+File Extension: .dart
+Content Length: 4344 characters
+
+--- File Content ---
+import 'package:atri/utils/app_constants.dart';
+import 'package:atri/utils/app_router.dart';
+import 'package:flutter/material.dart';
+
+
+class ChromePopupMenuButton extends StatelessWidget {
+  const ChromePopupMenuButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<String>(
+      icon: const Icon(Icons.more_vert, color: kGoogleChromeDarkGrey),
+      offset: const Offset(0, kToolbarHeight), // Position below the AppBar icon
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+        _buildPopupMenuItem(context, 'New tab', kNewTabIcon, 'new_tab'),
+        _buildPopupMenuItem(context, 'New Incognito tab', kIncognitoIcon, 'incognito'),
+        _buildPopupMenuItem(context, 'Add tab to new group', kNewGroupIcon, 'new_group'),
+        const PopupMenuDivider(),
+        _buildPopupMenuItem(context, 'History', kHistoryIcon, 'history'),
+        _buildPopupMenuItem(context, 'Delete browsing data', kDeleteIcon, 'delete_data'),
+        _buildPopupMenuItem(context, 'Downloads', kDownloadIcon, 'downloads'),
+        _buildPopupMenuItem(context, 'Bookmarks', kStarIcon, 'bookmarks'),
+        _buildPopupMenuItem(context, 'Recent tabs', kRecentTabsIcon, 'recent_tabs'),
+        const PopupMenuDivider(),
+        _buildPopupMenuItem(context, 'Zoom', kZoomIcon, 'zoom'),
+        _buildPopupMenuItem(context, 'Share...', kShareIcon, 'share'),
+        _buildPopupMenuItem(context, 'Find in page', kFindInPageIcon, 'find_in_page'),
+        _buildPopupMenuItem(context, 'Translate...', kTranslateIcon, 'translate'),
+        _buildPopupMenuItem(context, 'Add to Home screen', kAddHomeScreenIcon, 'add_to_home'),
+        const PopupMenuDivider(),
+        PopupMenuItem<String>(
+          value: 'google_com',
+          child: Row(
+            children: [
+              const Icon(Icons.search, color: kGoogleChromeDarkGrey, size: 20),
+              const SizedBox(width: kSmallPadding),
+              Expanded(
+                child: Text('google.com', style: TextStyle(color: kGoogleChromeDarkGrey)),
+              ),
+              const SizedBox(width: kSmallPadding),
+              ElevatedButton.icon(
+                onPressed: () {
+                  print('Follow google.com pressed');
+                  Navigator.pop(context); // Close menu after action
+                },
+                icon: const Icon(Icons.add, size: 16),
+                label: const Text('Follow'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: kGoogleChromeBlue,
+                  foregroundColor: Colors.white,
+                  minimumSize: Size.zero, // Remove minimum size
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // Custom padding
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Shrink tap target
+                ),
+              ),
+            ],
+          ),
+        ),
+        // Add "Settings" option which is common in browser menus
+        _buildPopupMenuItem(context, 'Settings', Icons.settings, 'settings'),
+      ],
+      onSelected: (String value) {
+        print('Selected: $value');
+        switch (value) {
+          case 'new_tab':
+          // No specific screen, just opens a new tab on Home Screen
+            break;
+          case 'incognito':
+          // No specific screen for this clone
+            break;
+          case 'settings':
+            AppRouter.navigateTo(context, AppRouter.settingsRoute);
+            break;
+          case 'history':
+          case 'downloads':
+          case 'bookmarks':
+          case 'recent_tabs':
+            AppRouter.navigateTo(context, AppRouter.placeholderRoute, arguments: value);
+            break;
+          default:
+          // Handle other menu items, print for now
+            print('Action for $value');
+        }
+      },
+    );
+  }
+
+  PopupMenuItem<String> _buildPopupMenuItem(
+      BuildContext context, String text, IconData icon, String value) {
+    return PopupMenuItem<String>(
+      value: value,
+      child: Row(
+        children: [
+          Icon(icon, color: kGoogleChromeDarkGrey),
+          const SizedBox(width: kSmallPadding),
+          Text(text, style: const TextStyle(color: kGoogleChromeDarkGrey)),
+        ],
+      ),
+    );
+  }
+}
+
+
+--- End File ---
+
+--- File Info ---
+File Name: quick_access_grid_item.dart
+File Path: /home/nso/Documents/AioFl/atri/lib/widgets/quick_access_grid_item.dart
+File Extension: .dart
+Content Length: 1135 characters
+
+--- File Content ---
+
+import 'package:atri/utils/app_constants.dart';
+import 'package:flutter/material.dart';
+
+class QuickAccessGridItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
+  final Color? iconColor;
+  final Color? backgroundColor;
+
+  const QuickAccessGridItem({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+    this.iconColor,
+    this.backgroundColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Column(
+        children: [
+          CircleAvatar(
+            radius: 24,
+            backgroundColor: backgroundColor ?? Colors.grey[200],
+            child: Icon(icon, color: iconColor ?? kGoogleChromeDarkGrey, size: 28),
+          ),
+          const SizedBox(height: kSmallPadding / 2),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 12, color: kGoogleChromeMediumGrey),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+--- End File ---
+
+--- File Info ---
+File Name: app_constants.dart
+File Path: /home/nso/Documents/AioFl/atri/lib/utils/app_constants.dart
+File Extension: .dart
+Content Length: 2418 characters
+
+--- File Content ---
+import 'package:flutter/material.dart';
+
+// Colors
+const Color kGoogleChromeBlue = Color(0xFF4285F4);
+const Color kGoogleChromeGrey = Color(0xFFF1F3F4);
+const Color kGoogleChromeDarkGrey = Color(0xFF202124);
+const Color kGoogleChromeMediumGrey = Color(0xFF5F6368); // For text like "1d"
+const Color kGoogleChromeLightGrey = Color(0xFFDADCE0); // Border color
+
+// Padding and Spacing
+const EdgeInsets kHorizontalPadding = EdgeInsets.symmetric(horizontal: 16.0);
+const double kSmallPadding = 8.0;
+const double kMediumPadding = 16.0;
+const double kLargePadding = 24.0;
+
+const double kCardElevation = 0.5;
+const BorderRadius kCardBorderRadius = BorderRadius.all(Radius.circular(12.0));
+
+// Text Styles
+const TextStyle kUrlTextStyle = TextStyle(color: Color(0xFF006400), fontSize: 13.0); // Dark Green for URLs
+const TextStyle kTitleTextStyle = TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500);
+const TextStyle kDescriptionTextStyle = TextStyle(fontSize: 14.0, color: Color(0xFF5F6368));
+const TextStyle kSmallDescriptionTextStyle = TextStyle(fontSize: 12.0, color: Color(0xFF5F6368));
+const TextStyle kBoldWhiteTextStyle = TextStyle(color: Colors.white, fontWeight: FontWeight.bold);
+const TextStyle kSettingsTitleStyle = TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500);
+const TextStyle kSettingsSubtitleStyle = TextStyle(fontSize: 14.0, color: kGoogleChromeMediumGrey);
+
+// Icons
+// Placeholder for custom icons not readily available in Material Icons
+const IconData kHomeIcon = Icons.home_outlined;
+const IconData kPlusIcon = Icons.add;
+const IconData kStarIcon = Icons.star_outline;
+const IconData kDownloadIcon = Icons.download_outlined;
+const IconData kInfoIcon = Icons.info_outline;
+const IconData kRefreshIcon = Icons.refresh;
+const IconData kSearchIcon = Icons.search;
+const IconData kMicIcon = Icons.mic_none;
+const IconData kShareIcon = Icons.share;
+const IconData kTranslateIcon = Icons.translate_outlined;
+const IconData kAddHomeScreenIcon = Icons.add_to_home_screen;
+const IconData kHistoryIcon = Icons.history;
+const IconData kDeleteIcon = Icons.delete_outline;
+const IconData kRecentTabsIcon = Icons.tab;
+const IconData kZoomIcon = Icons.zoom_out_map;
+const IconData kFindInPageIcon = Icons.find_in_page_outlined;
+const IconData kNewTabIcon = Icons.add_box_outlined;
+final IconData kIncognitoIcon = Icons.adobe_sharp;
+const IconData kNewGroupIcon = Icons.grid_on_outlined; // Or Icons.group_add
+
+--- End File ---
+
+--- File Info ---
+File Name: app_router.dart
+File Path: /home/nso/Documents/AioFl/atri/lib/utils/app_router.dart
+File Extension: .dart
+Content Length: 1353 characters
+
+--- File Content ---
+import 'package:flutter/material.dart';
+import 'package:atri/screens/home_screen.dart';
+import 'package:atri/screens/search_input_screen.dart';
+import 'package:atri/screens/tab_switcher_screen.dart';
+import 'package:atri/screens/settings_screen.dart';
+import 'package:atri/screens/placeholder_screen.dart';
+import 'package:atri/screens/browser_screen.dart'; // Import the BrowserScreen
+
+class AppRouter {
+  static const String homeRoute = '/';
+  static const String searchInputRoute = '/search_input';
+  static const String searchResultsRoute = '/search_results'; // Now points to BrowserScreen
+  static const String tabSwitcherRoute = '/tab_switcher';
+  static const String settingsRoute = '/settings';
+  static const String placeholderRoute = '/placeholder';
+
+  static Map<String, WidgetBuilder> routes = {
+    homeRoute: (context) => const HomeScreen(),
+    searchInputRoute: (context) => const SearchInputScreen(),
+    searchResultsRoute: (context) => const BrowserScreen(), // Updated to BrowserScreen
+    tabSwitcherRoute: (context) => const TabSwitcherScreen(),
+    settingsRoute: (context) => const SettingsScreen(),
+    placeholderRoute: (context) => const PlaceholderScreen(),
+  };
+
+  static void navigateTo(BuildContext context, String routeName, {Object? arguments}) {
+    Navigator.pushNamed(context, routeName, arguments: arguments);
+  }
+}
+
+--- End File ---
+
+--- File Info ---
+File Name: main.dart
+File Path: /home/nso/Documents/AioFl/atri/lib/main.dart
+File Extension: .dart
+Content Length: 1434 characters
+
+--- File Content ---
+import 'package:atri/data/local/app_database.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:atri/utils/app_router.dart';
+import 'package:atri/utils/app_constants.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+
+/*
+ * Copyright (C) 2023-2025 moluopro. All rights reserved.
+ * Github: https://github.com/moluopro
+ */
+
+// Required to use AppExitResponse for Fluter 3.10 or later
+
+Future<void> main() async {
+    // it should be the first line in main method
+  WidgetsFlutterBinding.ensureInitialized();
+    await AppDatabase.instance.database;
+if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+    await InAppWebViewController.setWebContentsDebuggingEnabled(true);
+  }
+
+  runApp(new MyApp());}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Chrome Clone',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: Colors.white,
+        fontFamily: 'Roboto', // Default font, adjust if needed
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.white,
+          foregroundColor: kGoogleChromeDarkGrey,
+          elevation: 0,
+        ),
+      ),
+      initialRoute: AppRouter.homeRoute,
+      routes: AppRouter.routes,
+    );
+  }
+}
+
+
+--- End File ---
+
+--- File Info ---
+File Name: search_input_screen.dart
+File Path: /home/nso/Documents/AioFl/atri/lib/screens/search_input_screen.dart
+File Extension: .dart
+Content Length: 7749 characters
+
+--- File Content ---
+import 'package:atri/models/search_item.dart';
+import 'package:atri/utils/app_constants.dart';
+import 'package:atri/utils/app_router.dart';
+import 'package:atri/widgets/search_result_tile.dart';
+import 'package:flutter/material.dart';
+
+
+class SearchInputScreen extends StatefulWidget {
+  const SearchInputScreen({super.key});
+
+  @override
+  State<SearchInputScreen> createState() => _SearchInputScreenState();
+}
+
+class _SearchInputScreenState extends State<SearchInputScreen> {
+  final TextEditingController _searchController = TextEditingController(text: '');
+  final FocusNode _focusNode = FocusNode();
+
+  final List<SearchItem> _searchHistory = [
+    SearchItem(title: 'figma anime streaming', url: '', isHistory: true),
+    SearchItem(title: 'gemini', url: '', isHistory: true),
+    SearchItem(title: 'deepseek', url: '', isHistory: true),
+    SearchItem(title: 'flutter awesome', url: '', isHistory: true),
+    SearchItem(title: 'ai studio', url: '', isHistory: true),
+    SearchItem(title: 'bir proxy satın al', url: '', isHistory: true),
+    SearchItem(title: 'shamiko github', url: '', isHistory: true),
+    SearchItem(title: 'flutter gem', url: '', isHistory: true),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _focusNode.requestFocus(); // Auto-focus on text field
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: _buildCustomSearchAppBar(),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              padding: EdgeInsets.zero,
+              itemCount: _searchHistory.length,
+              itemBuilder: (context, index) {
+                return SearchResultTile(item: _searchHistory[index]);
+              },
+            ),
+          ),
+          // Placeholder for keyboard - not a real keyboard
+          _buildMockKeyboard(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCustomSearchAppBar() {
+    return AppBar(
+      backgroundColor: Colors.white,
+      elevation: 0,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back, color: kGoogleChromeDarkGrey),
+        onPressed: () => Navigator.pop(context),
+      ),
+      titleSpacing: 0,
+      title: Container(
+        height: kToolbarHeight * 0.7,
+        padding: const EdgeInsets.symmetric(horizontal: kSmallPadding),
+        decoration: BoxDecoration(
+          color: kGoogleChromeGrey,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.search, color: kGoogleChromeMediumGrey, size: 20),
+            const SizedBox(width: kSmallPadding),
+            Expanded(
+              child: TextField(
+                controller: _searchController,
+                focusNode: _focusNode,
+                decoration: InputDecoration(
+                  hintText: 'Search Google or type URL',
+                  hintStyle: const TextStyle(color: kGoogleChromeMediumGrey),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.zero,
+                  isDense: true,
+                ),
+                style: const TextStyle(color: kGoogleChromeDarkGrey, fontSize: 16),
+                onSubmitted: (query) {
+  if (query.isNotEmpty) {
+    AppRouter.navigateTo(context, AppRouter.searchResultsRoute, arguments: query);
+  }
+
+                },
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.close, color: kGoogleChromeMediumGrey, size: 20),
+              onPressed: () {
+                _searchController.clear();
+              },
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(kMicIcon, color: kGoogleChromeDarkGrey),
+          onPressed: () {
+            print('Mic pressed');
+          },
+        ),
+        const SizedBox(width: kSmallPadding),
+      ],
+    );
+  }
+
+
+  Widget _buildMockKeyboard() {
+    return Container(
+      color: Colors.grey[200],
+      padding: const EdgeInsets.all(kSmallPadding),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildKeyboardIcon(Icons.grid_view),
+              _buildKeyboardIcon(Icons.gif_box_outlined),
+              _buildKeyboardIcon(Icons.content_copy),
+              _buildKeyboardIcon(Icons.settings_outlined),
+              _buildKeyboardIcon(Icons.palette_outlined),
+              _buildKeyboardIcon(Icons.emoji_emotions_outlined),
+              _buildKeyboardIcon(Icons.mic_none),
+            ],
+          ),
+          const SizedBox(height: kSmallPadding),
+          // Simplified number row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: List.generate(10, (index) => _buildKey('${index == 9 ? 0 : index + 1}')),
+          ),
+          const SizedBox(height: kSmallPadding / 2),
+          // Simplified letter rows (only A-Z for brevity)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: 'qwertyuiop'.split('').map((e) => _buildKey(e)).toList(),
+          ),
+          const SizedBox(height: kSmallPadding / 2),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildShiftKey(),
+              ...('asdfghjkl'.split('').map((e) => _buildKey(e)).toList()),
+              _buildDeleteKey(),
+            ],
+          ),
+          const SizedBox(height: kSmallPadding / 2),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildSpecialKey('?123'),
+              _buildSpecialKey('/'),
+              _buildSpecialKey('🌎'),
+              _buildSpecialKey('English'),
+              _buildSpecialKey('➡️'),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildKey(String text) {
+    return Container(
+      width: 32,
+      height: 40,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        text.toUpperCase(),
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+      ),
+    );
+  }
+
+  Widget _buildKeyboardIcon(IconData icon) {
+    return Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Icon(icon, color: Colors.grey[700], size: 20),
+    );
+  }
+
+  Widget _buildShiftKey() {
+    return Container(
+      width: 50,
+      height: 40,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: const Icon(Icons.arrow_upward, size: 20),
+    );
+  }
+
+  Widget _buildDeleteKey() {
+    return Container(
+      width: 50,
+      height: 40,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: const Icon(Icons.backspace_outlined, size: 20),
+    );
+  }
+
+  Widget _buildSpecialKey(String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      height: 40,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      alignment: Alignment.center,
+      child: Text(text, style: const TextStyle(fontSize: 14)),
+    );
+  }
+}
+
+--- End File ---
+
+--- File Info ---
+File Name: browser_screen.dart
+File Path: /home/nso/Documents/AioFl/atri/lib/screens/browser_screen.dart
+File Extension: .dart
+Content Length: 13398 characters
+
+--- File Content ---
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
+class BrowserScreen extends StatefulWidget {
+  const BrowserScreen({super.key});
+
+  @override
+  State<BrowserScreen> createState() => _BrowserScreenState();
+}
+
+class _BrowserScreenState extends State<BrowserScreen> {
+  InAppWebViewController? _controller;
+  PullToRefreshController? _pullToRefreshController;
+
+  String _currentUrl = '';
+  String _initialInput = '';
+  String _title = '';
+  double _progress = 0.0;
+  bool _canGoBack = false;
+  bool _canGoForward = false;
+  bool _isDesktopMode = false;
+
+  final TextEditingController _urlController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _pullToRefreshController = PullToRefreshController(
+      onRefresh: () async {
+        if (Platform.isAndroid) {
+          await _controller?.reload();
+        } else if (Platform.isIOS) {
+          final url = await _controller?.getUrl();
+          if (url != null) {
+            await _controller?.loadUrl(urlRequest: URLRequest(url: url));
+          }
+        }
+      },
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args is String) {
+      _initialInput = args;
+    }
+  }
+
+  @override
+  void dispose() {
+    _urlController.dispose();
+    super.dispose();
+  }
+
+  String _normalizeInputToUrl(String input) {
+    final trimmed = input.trim();
+    if (trimmed.isEmpty) return 'https://www.google.com';
+
+    final hasScheme = trimmed.startsWith('http://') || trimmed.startsWith('https://');
+    final looksLikeUrl = RegExp(r'^[^\s]+\.[^\s]{2,}(/.*)?$').hasMatch(trimmed);
+
+    if (hasScheme) return trimmed;
+    if (looksLikeUrl && !trimmed.contains(' ')) {
+      return 'https://$trimmed';
+    }
+
+    final encodedQuery = Uri.encodeQueryComponent(trimmed);
+    return 'https://www.google.com/search?q=$encodedQuery';
+  }
+
+  UserPreferredContentMode get _preferredContentMode =>
+      _isDesktopMode ? UserPreferredContentMode.DESKTOP : UserPreferredContentMode.MOBILE;
+
+  Future<void> _loadInput(String input) async {
+    final url = _normalizeInputToUrl(input);
+    _urlController.text = url;
+    await _controller?.loadUrl(urlRequest: URLRequest(url: WebUri(url)));
+  }
+
+  Future<void> _updateNavState() async {
+    final canBack = await _controller?.canGoBack() ?? false;
+    final canFwd = await _controller?.canGoForward() ?? false;
+    setState(() {
+      _canGoBack = canBack;
+      _canGoForward = canFwd;
+    });
+  }
+
+  Future<void> _findInPage() async {
+    final query = await showDialog<String>(
+      context: context,
+      builder: (ctx) {
+        final tc = TextEditingController();
+        return AlertDialog(
+          title: const Text('Find in page'),
+          content: TextField(
+            controller: tc,
+            decoration: const InputDecoration(hintText: 'Enter text'),
+            autofocus: true,
+            textInputAction: TextInputAction.search,
+            onSubmitted: (v) => Navigator.of(ctx).pop(v),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Cancel')),
+            TextButton(onPressed: () => Navigator.of(ctx).pop(tc.text), child: const Text('Find')),
+          ],
+        );
+      },
+    );
+    if (query == null || query.trim().isEmpty) return;
+    await _controller?.findAllAsync(find: query);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(children: const [
+            Icon(Icons.find_in_page, color: Colors.white),
+            SizedBox(width: 8),
+            Expanded(child: Text('Searching in page...')),
+          ]),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+  Future<void> _toggleDesktopMode() async {
+    setState(() => _isDesktopMode = !_isDesktopMode);
+    await _controller?.setSettings(settings: InAppWebViewSettings(
+      preferredContentMode: UserPreferredContentMode.RECOMMENDED,
+      userAgent: _isDesktopMode
+          ? 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36'
+          : '', // Default user agent for mobile
+    ));
+    final current = await _controller?.getUrl();
+    if (current != null) {
+      await _controller?.loadUrl(urlRequest: URLRequest(url: current));
+    }
+  }
+
+  Future<void> _openExternally() async {
+    final uri = await _controller?.getUrl();
+    if (uri != null) {
+      await launchUrl(Uri.parse(uri.toString()), mode: LaunchMode.externalApplication);
+    }
+  }
+
+  Future<void> _share() async {
+    final uri = await _controller?.getUrl();
+    if (uri != null) {
+      await Share.share(uri.toString());
+    }
+  }
+
+  Future<void> _copyLink() async {
+    final uri = await _controller?.getUrl();
+    if (uri != null) {
+      await Clipboard.setData(ClipboardData(text: uri.toString()));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Link copied')),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0.5,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: _canGoBack ? Colors.black87 : Colors.black26),
+          onPressed: _canGoBack
+              ? () async {
+                  await _controller?.goBack();
+                  await _updateNavState();
+                }
+              : null,
+          tooltip: 'Back',
+        ),
+        titleSpacing: 0,
+        title: Container(
+          height: 40,
+          decoration: BoxDecoration(
+            color: const Color(0xFFF1F3F4),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          alignment: Alignment.center,
+          child: Row(
+            children: [
+              const Icon(Icons.lock_outline, size: 16, color: Color(0xFF5F6368)),
+              const SizedBox(width: 8),
+              Expanded(
+                child: TextField(
+                  controller: _urlController,
+                  decoration: const InputDecoration(
+                    hintText: 'Search or type URL',
+                    border: InputBorder.none,
+                    isDense: true,
+                  ),
+                  style: const TextStyle(fontSize: 14),
+                  textInputAction: TextInputAction.go,
+                  onSubmitted: _loadInput,
+                ),
+              ),
+              if (_progress < 1.0)
+                IconButton(
+                  splashRadius: 18,
+                  icon: const Icon(Icons.close, size: 18, color: Color(0xFF5F6368)),
+                  onPressed: () => _controller?.stopLoading(),
+                  tooltip: 'Stop',
+                )
+              else
+                IconButton(
+                  splashRadius: 18,
+                  icon: const Icon(Icons.refresh, size: 18, color: Color(0xFF5F6368)),
+                  onPressed: () => _controller?.reload(),
+                  tooltip: 'Reload',
+                ),
+            ],
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.arrow_forward, color: _canGoForward ? Colors.black87 : Colors.black26),
+            onPressed: _canGoForward
+                ? () async {
+                    await _controller?.goForward();
+                    await _updateNavState();
+                  }
+                : null,
+            tooltip: 'Forward',
+          ),
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert, color: Colors.black87),
+            onSelected: (v) async {
+              switch (v) {
+                case 'share':
+                  await _share();
+                  break;
+                case 'copy':
+                  await _copyLink();
+                  break;
+                case 'external':
+                  await _openExternally();
+                  break;
+                case 'find':
+                  await _findInPage();
+                  break;
+                case 'desktop':
+                  await _toggleDesktopMode();
+                  break;
+                case 'clear_cache':
+                  await _controller?.clearCache();
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Cache cleared')));
+                  }
+                  break;
+                case 'clear_cookies':
+                  await CookieManager.instance().deleteAllCookies();
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Cookies cleared')));
+                  }
+                  break;
+              }
+            },
+            itemBuilder: (ctx) => [
+              const PopupMenuItem(value: 'share', child: Text('Share')),
+              const PopupMenuItem(value: 'copy', child: Text('Copy link')),
+              const PopupMenuItem(value: 'external', child: Text('Open in browser')),
+              const PopupMenuItem(value: 'find', child: Text('Find in page')),
+              PopupMenuItem(
+                value: 'desktop',
+                child: Row(
+                  children: [
+                    const Text('Desktop site'),
+                    const Spacer(),
+                    if (_isDesktopMode) const Icon(Icons.check, size: 16),
+                  ],
+                ),
+              ),
+              const PopupMenuDivider(),
+              const PopupMenuItem(value: 'clear_cache', child: Text('Clear cache')),
+              const PopupMenuItem(value: 'clear_cookies', child: Text('Clear cookies')),
+            ],
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          if (_progress < 1.0)
+            LinearProgressIndicator(
+              value: _progress,
+              minHeight: 2,
+              color: theme.colorScheme.primary,
+              backgroundColor: Colors.grey.shade200,
+            ),
+          Expanded(
+            child: InAppWebView(
+              initialUrlRequest: URLRequest(
+                url: WebUri(_normalizeInputToUrl(_initialInput.isEmpty ? 'https://www.google.com' : _initialInput)),
+              ),
+              initialSettings: InAppWebViewSettings(
+                javaScriptEnabled: true,
+                mediaPlaybackRequiresUserGesture: false,
+                allowsInlineMediaPlayback: true,
+                useShouldOverrideUrlLoading: true,
+                preferredContentMode: _preferredContentMode,
+                transparentBackground: false,
+                allowsBackForwardNavigationGestures: true,
+              ),
+              pullToRefreshController: _pullToRefreshController,
+              onWebViewCreated: (controller) {
+                _controller = controller;
+              },
+              onTitleChanged: (controller, title) {
+                setState(() => _title = title ?? '');
+              },
+              onLoadStart: (controller, url) {
+                final u = url?.toString() ?? '';
+                setState(() {
+                  _currentUrl = u;
+                  _urlController.text = u;
+                });
+                _updateNavState();
+              },
+              onLoadStop: (controller, url) async {
+                final u = url?.toString() ?? '';
+                setState(() {
+                  _currentUrl = u;
+                  _urlController.text = u;
+                  _progress = 1.0;
+                });
+                _pullToRefreshController?.endRefreshing();
+                _updateNavState();
+              },
+              onProgressChanged: (controller, progress) {
+                setState(() => _progress = progress / 100.0);
+              },
+              shouldOverrideUrlLoading: (controller, action) async {
+                final uri = action.request.url;
+                if (uri == null) return NavigationActionPolicy.ALLOW;
+
+                final scheme = uri.scheme.toLowerCase();
+                if (!['http', 'https', 'file', 'chrome', 'data', 'javascript', 'about'].contains(scheme)) {
+                  try {
+                    // Attempt to launch non-web URLs externally
+                    await launchUrl(Uri.parse(uri.toString()));
+                    return NavigationActionPolicy.CANCEL; // Prevent the WebView from trying to load it
+                  } catch (_) {
+                    // Handle cases where launchUrl might fail
+                    return NavigationActionPolicy.CANCEL;
+                  }
+                }
+                // Allow http, https, and other recognized schemes within the WebView
+                return NavigationActionPolicy.ALLOW;
+              },
+              onReceivedError: (controller, request, error) {
+                _pullToRefreshController?.endRefreshing();
+                // Optionally, you can display an error message or a custom error page here
+                debugPrint('WebView Error: ${error.description} for URL: ${request.url}');
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+--- End File ---
+
+--- File Info ---
+File Name: home_screen.dart
+File Path: /home/nso/Documents/AioFl/atri/lib/screens/home_screen.dart
+File Extension: .dart
+Content Length: 13272 characters
+
+--- File Content ---
+import 'package:atri/utils/app_constants.dart';
+import 'package:atri/utils/app_router.dart';
+import 'package:atri/widgets/app_bars.dart';
+import 'package:atri/widgets/quick_access_grid_item.dart';
+import 'package:atri/widgets/search_bar_widget.dart';
+import 'package:flutter/material.dart';
+
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: const HomeAppBar(),
+      body: CustomScrollView(
+        slivers: [
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(vertical: kMediumPadding),
+            sliver: SliverToBoxAdapter(
+              child: Image.asset(
+                'assets/images/google_doodle.jpg',
+                height: 60,
+                // Replace with actual Google Doodle if available
+                errorBuilder: (context, error, stackTrace) => Center(
+                  child: Text(
+                    'Google',
+                    style: TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue[600],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(child: HomeSearchBar()),
+          const SliverToBoxAdapter(child: SizedBox(height: kLargePadding)),
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: 120, // Height for the horizontal scroll view of icons
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding: kHorizontalPadding,
+                children: [
+                  QuickAccessGridItem(
+                    icon: Icons.public,
+                    label: 'Internet Sp...',
+                    onPressed: () => AppRouter.navigateTo(
+                      context,
+                      AppRouter.searchResultsRoute,
+                      arguments: 'https://flutter.dev',
+                    ),
+                    backgroundColor: Colors.red.withOpacity(0.1),
+                    iconColor: Colors.red,
+                  ),
+                  const SizedBox(width: kMediumPadding),
+                  QuickAccessGridItem(
+                    icon: Icons.phone_android,
+                    label: 'سطح دسترسی',
+                    onPressed: () => AppRouter.navigateTo(
+                      context,
+                      AppRouter.searchResultsRoute,
+                      arguments: 'https://flutter.dev',
+                    ),
+                    backgroundColor: Colors.blue.withOpacity(0.1),
+                    iconColor: Colors.blue,
+                  ),
+                  const SizedBox(width: kMediumPadding),
+                  QuickAccessGridItem(
+                    icon: Icons.cloud_outlined,
+                    label: 'Internet Sp...',
+                    onPressed: () => AppRouter.navigateTo(
+                      context,
+                      AppRouter.searchResultsRoute,
+                      arguments: 'https://flutter.dev',
+                    ),
+                    backgroundColor: Colors.orange.withOpacity(0.1),
+                    iconColor: Colors.orange,
+                  ),
+                  const SizedBox(width: kMediumPadding),
+                  QuickAccessGridItem(
+                    icon: Icons.star_border,
+                    label: 'Google Ge...',
+                    onPressed: () => AppRouter.navigateTo(
+                      context,
+                      AppRouter.searchResultsRoute,
+                      arguments: 'https://flutter.dev',
+                    ),
+                    backgroundColor: Colors.green.withOpacity(0.1),
+                    iconColor: Colors.green,
+                  ),
+                  const SizedBox(width: kMediumPadding),
+                  QuickAccessGridItem(
+                    icon: Icons.camera_alt_outlined,
+                    label: 'Other App',
+                    onPressed: () => AppRouter.navigateTo(
+                      context,
+                      AppRouter.searchResultsRoute,
+                      arguments: 'https://flutter.dev',
+                    ),
+                    backgroundColor: Colors.purple.withOpacity(0.1),
+                    iconColor: Colors.purple,
+                  ),
+                  const SizedBox(width: kMediumPadding),
+                  // Add more items as needed
+                ],
+              ),
+            ),
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: kLargePadding)),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: kHorizontalPadding,
+              child: Card(
+                elevation: kCardElevation,
+                shape: RoundedRectangleBorder(borderRadius: kCardBorderRadius),
+                child: Padding(
+                  padding: const EdgeInsets.all(kMediumPadding),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.vpn_key_outlined,
+                            color: kGoogleChromeMediumGrey,
+                          ),
+                          const SizedBox(width: kSmallPadding),
+                          Text(
+                            'Safety Check',
+                            style: kTitleTextStyle.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: kSmallPadding),
+                      Text('Change passwords', style: kTitleTextStyle),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Found 749 compromised passwords',
+                        style: kDescriptionTextStyle,
+                      ),
+                      const SizedBox(height: kMediumPadding),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            print('Change passwords pressed');
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: kGoogleChromeBlue,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: kLargePadding,
+                              vertical: kSmallPadding,
+                            ),
+                          ),
+                          child: const Text('Change passwords'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: kLargePadding)),
+          SliverAppBar(
+            pinned: true,
+            toolbarHeight: 50,
+            backgroundColor: Colors.white,
+            elevation: 0.5,
+            flexibleSpace: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TabBar(
+                  controller: _tabController,
+                  indicatorColor: kGoogleChromeBlue,
+                  labelColor: kGoogleChromeDarkGrey,
+                  unselectedLabelColor: kGoogleChromeMediumGrey,
+                  indicatorWeight: 2,
+                  labelStyle: kTitleTextStyle.copyWith(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  unselectedLabelStyle: kTitleTextStyle.copyWith(fontSize: 14),
+                  tabs: const [
+                    Tab(text: 'Discover'),
+                    Tab(text: 'Following'),
+                  ],
+                ),
+              ],
+            ),
+            actions: [
+              IconButton(
+                icon: const Icon(
+                  Icons.more_vert,
+                  color: kGoogleChromeMediumGrey,
+                ),
+                onPressed: () {
+                  print('Discover feed menu pressed');
+                },
+              ),
+            ],
+          ),
+          SliverFillRemaining(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _buildDiscoverFeed(),
+                Center(
+                  child: Text(
+                    'Following feed content',
+                    style: kDescriptionTextStyle,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDiscoverFeed() {
+    return ListView(
+      padding: const EdgeInsets.only(top: kMediumPadding),
+      children: [
+        _buildDiscoverFeedItem(
+          title: 'Sad news: Another Linux distro is shutting down',
+          source: 'Neowin • 1d',
+          imageUrl: 'assets/images/linux_penguin.png',
+        ),
+        _buildDiscoverFeedItem(
+          title: 'Google Maps rolls out new features for electric car owners',
+          source: 'TechCrunch • 2h',
+          imageUrl: '', // No specific image for this one in screenshot
+        ),
+        _buildDiscoverFeedItem(
+          title: 'Understanding Flutter\'s declarative UI paradigm',
+          source: 'Flutter Dev • 5d',
+          imageUrl: '',
+        ),
+        _buildDiscoverFeedItem(
+          title: 'Why Dark Mode is more than just aesthetics',
+          source: 'Design Insights • 1w',
+          imageUrl: '',
+        ),
+        _buildDiscoverFeedItem(
+          title: 'Future of AI: GPT-5 and beyond',
+          source: 'AI Today • 3d',
+          imageUrl: '',
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDiscoverFeedItem({
+    required String title,
+    required String source,
+    String? imageUrl,
+  }) {
+    return Card(
+      elevation: kCardElevation,
+      margin: const EdgeInsets.symmetric(
+        horizontal: kMediumPadding,
+        vertical: kSmallPadding / 2,
+      ),
+      shape: RoundedRectangleBorder(borderRadius: kCardBorderRadius),
+      child: InkWell(
+        onTap: () {
+          print('Tapped discover item: $title');
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(kMediumPadding),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: kTitleTextStyle,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(source, style: kSmallDescriptionTextStyle),
+                    const SizedBox(height: kSmallPadding),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.bookmark_border,
+                          size: 18,
+                          color: kGoogleChromeMediumGrey,
+                        ),
+                        const SizedBox(width: kSmallPadding),
+                        const Icon(
+                          Icons.share,
+                          size: 18,
+                          color: kGoogleChromeMediumGrey,
+                        ),
+                        const SizedBox(width: kSmallPadding),
+                        const Icon(
+                          Icons.more_vert,
+                          size: 18,
+                          color: kGoogleChromeMediumGrey,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              if (imageUrl != null && imageUrl.isNotEmpty) ...[
+                const SizedBox(width: kSmallPadding),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: Image.asset(
+                    imageUrl,
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      width: 100,
+                      height: 100,
+                      color: Colors.grey[200],
+                      child: const Icon(
+                        Icons.image_not_supported,
+                        size: 40,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+--- End File ---
+
+--- File Info ---
+File Name: search_results_screen.dart
+File Path: /home/nso/Documents/AioFl/atri/lib/screens/search_results_screen.dart
+File Extension: .dart
+Content Length: 2954 characters
+
+--- File Content ---
+import 'package:atri/models/search_item.dart';
+import 'package:atri/utils/app_constants.dart';
+import 'package:atri/widgets/app_bars.dart';
+import 'package:atri/widgets/search_result_tile.dart';
+import 'package:flutter/material.dart';
+
+
+class SearchResultsScreen extends StatefulWidget {
+  const SearchResultsScreen({super.key});
+
+  @override
+  State<SearchResultsScreen> createState() => _SearchResultsScreenState();
+}
+
+class _SearchResultsScreenState extends State<SearchResultsScreen> {
+  String _searchQuery = '';
+
+  final List<SearchItem> _searchResults = [
+    SearchItem(
+      title: 'Epic Anime - An Anime Streaming Website | Landing Page Design',
+      url: 'https://www.google.com/search?q',
+      description: 'A sleek and immersive anime streaming website. This design showcases a modern UI with an emphasis on user experience and engagement.',
+      imageUrl: 'assets/images/laptop_preview.png',
+    ),
+    SearchItem(
+      title: 'AniArk - Anime Streaming App',
+      url: 'https://www.figma.com',
+      description: 'Dive into a vast library of your favorite anime, streaming fast from an extensive collection of genres, bringing the ultimate anime experience right to your ...',
+      imageUrl: 'assets/images/figma_icon.png', // Using figma icon as placeholder
+    ),
+    SearchItem(
+      title: 'Animax - Anime Streaming App UI Kit',
+      url: 'https://www.figma.com',
+      description: 'Animax is a Premium & High Quality UI Kit with All Full Features of Anime Streaming App. Animax came with unique style and niche, you can easily...',
+      imageUrl: 'assets/images/animark_icon.png', // Using animark icon as placeholder for Figma asset
+      price: 'US\$33.00',
+    ),
+    SearchItem(
+      title: 'Anime Streaming Website (Tokyo Calling) - Landing Page Design',
+      url: 'https://www.google.com/search?q',
+      description: 'Landing page of a brand called Tokyo Calling. Tokyo Calling is a weeb\'s go-to destination for everything anime - from news and blogs to streams and watch ...',
+      imageUrl: 'assets/images/laptop_preview.png',
+    ),
+    // Add more dummy data if needed
+  ];
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final String? query = ModalRoute.of(context)?.settings.arguments as String?;
+    if (query != null && query.isNotEmpty) {
+      setState(() {
+        _searchQuery = query;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: SearchScreenAppBar(
+        urlOrSearchQuery: _searchQuery.isEmpty
+            ? 'google.com/search?q'
+            : 'google.com/search?q=$_searchQuery',
+        showGoogleIcon: true,
+      ),
+      body: ListView.builder(
+        padding: const EdgeInsets.symmetric(vertical: kSmallPadding),
+        itemCount: _searchResults.length,
+        itemBuilder: (context, index) {
+          return SearchResultTile(item: _searchResults[index]);
+        },
+      ),
+    );
+  }
+}
+
+--- End File ---
+
+--- File Info ---
+File Name: tab_switcher_screen.dart
+File Path: /home/nso/Documents/AioFl/atri/lib/screens/tab_switcher_screen.dart
+File Extension: .dart
+Content Length: 8777 characters
+
+--- File Content ---
+// Path: tab_switcher_screen.dart
+import 'package:atri/models/tab_item.dart';
+import 'package:atri/utils/app_constants.dart';
+import 'package:atri/widgets/app_bars.dart';
+import 'package:atri/widgets/draggable_closable_tab_bar.dart';
+import 'package:atri/widgets/search_bar_widget.dart';
+import 'package:atri/widgets/tab_preview_card.dart';
+import 'package:flutter/material.dart';
+import 'package:atri/widgets/draggable_closable_tab_bar.dart'; // Import the new tab bar widget
+
+class TabSwitcherScreen extends StatefulWidget {
+  const TabSwitcherScreen({super.key});
+
+  @override
+  State<TabSwitcherScreen> createState() => _TabSwitcherScreenState();
+}
+
+class _TabSwitcherScreenState extends State<TabSwitcherScreen> {
+  final TextEditingController _searchTabsController = TextEditingController();
+
+  List<TabItem> _openTabs = []; // Now managed by this class
+  TabItem? _lastClosedTab;
+  String? _activeTabId; // To keep track of the currently active tab
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize with some dummy tabs, ensuring one is active
+    _openTabs = [
+      TabItem.create(
+        title: 'Epic Anime - An Anime Streaming Website | Landing Page Design',
+        url: 'https://www.figma.com',
+        imageUrl: 'assets/images/laptop_preview.png',
+        isActive: true, // Mark this one as active initially
+      ),
+      TabItem.create(
+        title: 'Flutter Official Website',
+        url: 'https://flutter.dev',
+        imageUrl: 'assets/images/laptop_preview.png',
+      ),
+      TabItem.create(
+        title: 'Google Search',
+        url: 'https://google.com',
+        imageUrl: 'assets/images/laptop_preview.png',
+      ),
+    ];
+    _activeTabId = _openTabs.first.id;
+  }
+
+  // Method to create a new tab
+  void _addTab() {
+    setState(() {
+      final newTab = TabItem.create(
+        title: 'New Tab ${_openTabs.length + 1}',
+        url: 'https://example.com/new',
+        imageUrl: 'assets/images/laptop_preview.png', // Placeholder
+      );
+      _openTabs.add(newTab);
+      _selectTab(newTab.id); // Make the newly created tab active
+    });
+  }
+
+  // Modified to close tab by ID, consistent with DraggableClosableTabBar
+  void _closeTab(String tabId) {
+    setState(() {
+      final index = _openTabs.indexWhere((tab) => tab.id == tabId);
+      if (index != -1) {
+        _lastClosedTab = _openTabs[index];
+        _openTabs.removeAt(index);
+        _showUndoSnackbar();
+
+        // If the closed tab was active, set a new active tab
+        if (_activeTabId == tabId) {
+          _activeTabId = _openTabs.isNotEmpty ? _openTabs.first.id : null;
+          // Update isActive status for the new active tab
+          if (_activeTabId != null) {
+            final newActiveIndex = _openTabs.indexWhere((tab) => tab.id == _activeTabId);
+            if (newActiveIndex != -1) {
+              _openTabs[newActiveIndex].isActive = true;
+            }
+          }
+        }
+      }
+    });
+  }
+
+  void _undoCloseTab() {
+    if (_lastClosedTab != null) {
+      setState(() {
+        _openTabs.add(_lastClosedTab!);
+        _selectTab(_lastClosedTab!.id); // Select the undone tab
+        _lastClosedTab = null;
+      });
+    }
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+  }
+
+  void _showUndoSnackbar() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.check, color: Colors.white, size: 20),
+            const SizedBox(width: kSmallPadding),
+            Expanded(
+              child: Text(
+                '${_lastClosedTab?.title} Closed',
+                style: kBoldWhiteTextStyle,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+        action: SnackBarAction(
+          label: 'Undo',
+          onPressed: _undoCloseTab,
+          textColor: kGoogleChromeBlue,
+        ),
+        backgroundColor: kGoogleChromeDarkGrey,
+        duration: const Duration(seconds: 5),
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(kMediumPadding),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+    );
+  }
+
+  // Method to handle tab selection
+  void _selectTab(String tabId) {
+    setState(() {
+      for (var tab in _openTabs) {
+        tab.isActive = (tab.id == tabId);
+      }
+      _activeTabId = tabId;
+    });
+    // Optionally navigate back to the main content screen
+     Navigator.pop(context);
+  }
+
+  // Method to handle tab reordering
+  void _reorderTabs(int oldIndex, int newIndex) {
+    setState(() {
+      final movedTab = _openTabs.removeAt(oldIndex);
+      _openTabs.insert(newIndex, movedTab);
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchTabsController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: 
+      TabSwitcherAppBar(),
+        // Add action for creating new tab in AppBar if desired
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add_to_photos_outlined),
+            tooltip: 'New Tab',
+            onPressed: _addTab,
+          ),
+          // Original PopUpMenuButton from first code example (if needed)
+          // PopupMenuButton<String>(
+          //   tooltip: 'Workspace actions',
+          //   onSelected: (v) => _onWorkspaceAction(context, ref, active, v),
+          //   itemBuilder: (ctx) => const [
+          //     PopupMenuItem(value: 'rename', child: Text('Rename')),
+          //     PopupMenuItem(value: 'duplicate', child: Text('Duplicate')),
+          //     PopupMenuItem(value: 'export', child: Text('Export JSON')),
+          //     PopupMenuItem(value: 'import', child: Text('Import JSON')),
+          //     PopupMenuItem(value: 'delete', child: Text('Delete')),
+          //   ],
+          // ),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Draggable and Closable Tab Bar for active tab management
+          DraggableClosableTabBar(
+            tabs: _openTabs
+                .map((item) => TabData(
+                      id: item.id,
+                      title: item.title,
+                      isSelected: item.isActive,
+                    ))
+                .toList(),
+            onTabSelected: _selectTab,
+            onTabReordered: _reorderTabs,
+            onTabClosed: _closeTab,
+          ),
+          const SizedBox(height: kMediumPadding),
+          TabSwitcherSearchBar(controller: _searchTabsController),
+          const SizedBox(height: kMediumPadding),
+          Padding(
+            padding: kHorizontalPadding,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Inactive tab (${_openTabs.where((tab) => !tab.isActive).length})',
+                  style:
+                      kTitleTextStyle.copyWith(color: kGoogleChromeMediumGrey),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.arrow_forward_ios,
+                      size: 16, color: kGoogleChromeMediumGrey),
+                  onPressed: () {
+                    print('Inactive tab details pressed');
+                  },
+                ),
+              ],
+            ),
+          ),
+          const Divider(
+              indent: kMediumPadding,
+              endIndent: kMediumPadding,
+              height: kMediumPadding),
+          Expanded(
+            child: GridView.builder(
+              padding: kHorizontalPadding,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: kMediumPadding,
+                mainAxisSpacing: kMediumPadding,
+                childAspectRatio: 0.7,
+              ),
+              itemCount: _openTabs.length,
+              itemBuilder: (context, index) {
+                return TabPreviewCard(
+                  tab: _openTabs[index],
+                  onTap: () {
+                    print('Tapped tab: ${_openTabs[index].title}');
+                    _selectTab(_openTabs[index].id); // Select the tab when its card is tapped
+                    // Navigator.pop(context); // Go back to Home screen or original screen
+                  },
+                  onClose: () => _closeTab(_openTabs[index].id),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+      // Optional: Add a FloatingActionButton for new tab
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _addTab,
+        icon: const Icon(Icons.add),
+        label: const Text('New Tab'),
+      ),
+    );
+  }
+}
+
+// Keep TabPreviewCard as is, it's used by the GridView.builder
+// Path: widgets/tab_preview_card.dart
+
+
+--- End File ---
+
+--- File Info ---
+File Name: settings_screen.dart
+File Path: /home/nso/Documents/AioFl/atri/lib/screens/settings_screen.dart
+File Extension: .dart
+Content Length: 5668 characters
+
+--- File Content ---
+import 'package:atri/utils/app_constants.dart';
+import 'package:atri/utils/app_router.dart';
+import 'package:atri/widgets/app_bars.dart';
+import 'package:flutter/material.dart';
+
+
+class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key});
+
+  Widget _buildSettingsSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(kMediumPadding, kLargePadding, kMediumPadding, kSmallPadding),
+      child: Text(
+        title,
+        style: kDescriptionTextStyle.copyWith(fontSize: 13, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  Widget _buildSettingsListItem({
+    required BuildContext context,
+    String? title,
+    String? subtitle,
+    Widget? leading,
+    Widget? trailing,
+    VoidCallback? onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: kMediumPadding, vertical: kSmallPadding),
+        child: Row(
+          children: [
+            if (leading != null) ...[
+              leading,
+              const SizedBox(width: kMediumPadding),
+            ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (title != null) Text(title, style: kSettingsTitleStyle),
+                  if (subtitle != null) Text(subtitle, style: kSettingsSubtitleStyle),
+                ],
+              ),
+            ),
+            if (trailing != null) trailing,
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: const SettingsAppBar(),
+      body: ListView(
+        children: [
+          _buildSettingsSectionTitle('You and Google'),
+          _buildSettingsListItem(
+            context: context,
+            leading: const CircleAvatar(
+              radius: 24,
+              backgroundImage: AssetImage('assets/images/profile_avatar.png'), // Placeholder
+              backgroundColor: Colors.grey,
+              child: Text('D', style: TextStyle(color: Colors.white, fontSize: 20)),
+            ),
+            title: 'Daniel Saghapoor (INoSuKe)',
+            subtitle: 'd.saghapoor@gmail.com',
+            onTap: () {
+              print('Profile tapped');
+              AppRouter.navigateTo(context, AppRouter.placeholderRoute, arguments: 'Google Account');
+            },
+          ),
+          _buildSettingsListItem(
+            context: context,
+            leading: const Icon(Icons.search, color: kGoogleChromeDarkGrey),
+            title: 'Google services',
+            onTap: () {
+              print('Google services tapped');
+              AppRouter.navigateTo(context, AppRouter.placeholderRoute, arguments: 'Google Services');
+            },
+          ),
+          _buildSettingsSectionTitle('Basics'),
+          _buildSettingsListItem(
+            context: context,
+            title: 'Search engine',
+            subtitle: 'Google',
+            onTap: () {
+              print('Search engine tapped');
+              AppRouter.navigateTo(context, AppRouter.placeholderRoute, arguments: 'Search Engine');
+            },
+          ),
+          _buildSettingsListItem(
+            context: context,
+            title: 'Address bar',
+            subtitle: 'Top',
+            onTap: () {
+              print('Address bar tapped');
+              AppRouter.navigateTo(context, AppRouter.placeholderRoute, arguments: 'Address Bar');
+            },
+          ),
+          _buildSettingsSectionTitle('Privacy and security'),
+          _buildSettingsListItem(
+            context: context,
+            title: 'Safety check',
+            onTap: () {
+              print('Safety check tapped');
+              // This could navigate to the Safety Check card content or a dedicated page
+              AppRouter.navigateTo(context, AppRouter.placeholderRoute, arguments: 'Safety Check');
+            },
+          ),
+          _buildSettingsListItem(
+            context: context,
+            title: 'Passwords and Autofill',
+            onTap: () {
+              print('Passwords and Autofill tapped');
+              AppRouter.navigateTo(context, AppRouter.placeholderRoute, arguments: 'Passwords & Autofill');
+            },
+          ),
+          _buildSettingsListItem(
+            context: context,
+            title: 'Google Password Manager',
+            onTap: () {
+              print('Google Password Manager tapped');
+              AppRouter.navigateTo(context, AppRouter.placeholderRoute, arguments: 'Google Password Manager');
+            },
+          ),
+          _buildSettingsListItem(
+            context: context,
+            title: 'Payment methods',
+            onTap: () {
+              print('Payment methods tapped');
+              AppRouter.navigateTo(context, AppRouter.placeholderRoute, arguments: 'Payment Methods');
+            },
+          ),
+          _buildSettingsListItem(
+            context: context,
+            title: 'Addresses and more',
+            onTap: () {
+              print('Addresses and more tapped');
+              AppRouter.navigateTo(context, AppRouter.placeholderRoute, arguments: 'Addresses');
+            },
+          ),
+          _buildSettingsListItem(
+            context: context,
+            title: 'Autofill services',
+            onTap: () {
+              print('Autofill services tapped');
+              AppRouter.navigateTo(context, AppRouter.placeholderRoute, arguments: 'Autofill Services');
+            },
+          ),
+          // Add more settings categories/items as needed
+          const SizedBox(height: kLargePadding), // Bottom padding
+        ],
+      ),
+    );
+  }
+}
+
+
+--- End File ---
+
+--- File Info ---
+File Name: placeholder_screen.dart
+File Path: /home/nso/Documents/AioFl/atri/lib/screens/placeholder_screen.dart
+File Extension: .dart
+Content Length: 1581 characters
+
+--- File Content ---
+
+import 'package:atri/utils/app_constants.dart';
+import 'package:flutter/material.dart';
+
+class PlaceholderScreen extends StatelessWidget {
+  const PlaceholderScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final String? screenName = ModalRoute.of(context)?.settings.arguments as String?;
+    final String title = screenName?.replaceAll('_', ' ').capitalizeFirst ?? 'Placeholder';
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0.5,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: kGoogleChromeDarkGrey),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          title,
+          style: const TextStyle(color: kGoogleChromeDarkGrey, fontWeight: FontWeight.normal),
+        ),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.construction, size: 60, color: kGoogleChromeMediumGrey),
+            const SizedBox(height: kMediumPadding),
+            Text(
+              'This is the "$title" screen.',
+              style: kTitleTextStyle.copyWith(color: kGoogleChromeMediumGrey),
+            ),
+            Text(
+              'UI Not Implemented in this clone.',
+              style: kDescriptionTextStyle,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+extension StringExtension on String {
+  String get capitalizeFirst {
+    if (isEmpty) return this;
+    return this[0].toUpperCase() + substring(1);
+  }
+}
+
+--- End File ---
+

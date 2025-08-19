@@ -1,0 +1,34 @@
+├── data
+│   └── local
+│       ├── app_database.dart
+│       └── daos.dart
+├── main.dart
+├── models
+│   ├── bookmark_item.dart
+│   ├── downlooad_item.dart
+│   ├── history_item.dart
+│   ├── search_item.dart
+│   └── tab_item.dart
+├── screens
+│   ├── browser_screen.dart
+│   ├── chunker_interface.dart
+│   ├── home_screen.dart
+│   ├── placeholder_screen.dart
+│   ├── search_input_screen.dart
+│   ├── search_results_screen.dart
+│   ├── settings_screen.dart
+│   └── tab_switcher_screen.dart
+├── services
+│   └── chunker_service.dart
+├── utils
+│   ├── app_constants.dart
+│   └── app_router.dart
+└── widgets
+    ├── app_bars.dart
+    ├── chrome_popup_menu.dart
+    ├── content_box.dart
+    ├── draggable_closable_tab_bar.dart
+    ├── quick_access_grid_item.dart
+    ├── search_bar_widget.dart
+    ├── search_result_tile.dart
+    └── tab_preview_card.dart

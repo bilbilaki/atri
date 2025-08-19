@@ -1,7 +1,7 @@
+// Path: lib/widgets/chrome_popup_menu.dart
 import 'package:atri/utils/app_constants.dart';
 import 'package:atri/utils/app_router.dart';
 import 'package:flutter/material.dart';
-
 
 class ChromePopupMenuButton extends StatelessWidget {
   const ChromePopupMenuButton({super.key});
@@ -10,7 +10,7 @@ class ChromePopupMenuButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopupMenuButton<String>(
       icon: const Icon(Icons.more_vert, color: kGoogleChromeDarkGrey),
-      offset: const Offset(0, kToolbarHeight), // Position below the AppBar icon
+      offset: const Offset(0, kToolbarHeight),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
       itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
         _buildPopupMenuItem(context, 'New tab', kNewTabIcon, 'new_tab'),
@@ -35,59 +35,56 @@ class ChromePopupMenuButton extends StatelessWidget {
             children: [
               const Icon(Icons.search, color: kGoogleChromeDarkGrey, size: 20),
               const SizedBox(width: kSmallPadding),
-              Expanded(
+              const Expanded(
                 child: Text('google.com', style: TextStyle(color: kGoogleChromeDarkGrey)),
               ),
               const SizedBox(width: kSmallPadding),
               ElevatedButton.icon(
                 onPressed: () {
-                  print('Follow google.com pressed');
-                  Navigator.pop(context); // Close menu after action
+                  Navigator.pop(context);
                 },
                 icon: const Icon(Icons.add, size: 16),
                 label: const Text('Follow'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: kGoogleChromeBlue,
                   foregroundColor: Colors.white,
-                  minimumSize: Size.zero, // Remove minimum size
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // Custom padding
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Shrink tap target
+                  minimumSize: Size.zero,
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
               ),
             ],
           ),
         ),
-        // Add "Settings" option which is common in browser menus
         _buildPopupMenuItem(context, 'Settings', Icons.settings, 'settings'),
       ],
       onSelected: (String value) {
-        print('Selected: $value');
         switch (value) {
-          case 'new_tab':
-          // No specific screen, just opens a new tab on Home Screen
-            break;
-          case 'incognito':
-          // No specific screen for this clone
-            break;
           case 'settings':
             AppRouter.navigateTo(context, AppRouter.settingsRoute);
             break;
           case 'history':
+            AppRouter.navigateTo(context, AppRouter.historyRoute);
+            break;
           case 'downloads':
+            AppRouter.navigateTo(context, AppRouter.downloadsRoute);
+            break;
           case 'bookmarks':
+            AppRouter.navigateTo(context, AppRouter.bookmarksRoute);
+            break;
           case 'recent_tabs':
             AppRouter.navigateTo(context, AppRouter.placeholderRoute, arguments: value);
             break;
           default:
-          // Handle other menu items, print for now
-            print('Action for $value');
+            // others noop
+            break;
         }
       },
     );
   }
 
   PopupMenuItem<String> _buildPopupMenuItem(
-      BuildContext context, String text, IconData icon, String value) {
+    BuildContext context, String text, IconData icon, String value) {
     return PopupMenuItem<String>(
       value: value,
       child: Row(

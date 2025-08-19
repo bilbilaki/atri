@@ -151,10 +151,24 @@ class SettingsScreen extends StatelessWidget {
               AppRouter.navigateTo(context, AppRouter.placeholderRoute, arguments: 'Autofill Services');
             },
           ),
+          _buildSettingsSectionTitle('Web & Privacy'),
+ _buildSettingsListItem(
+ context: context,
+ title: 'User agent',
+ subtitle: 'Control how websites see your browser',
+ onTap: () => AppRouter.navigateTo(context, AppRouter.userAgentRoute),
+ ),
+ _buildSettingsListItem(
+ context: context,
+ title: 'Cookies',
+ subtitle: 'View and clear cookies',
+ onTap: () => AppRouter.navigateTo(context, AppRouter.cookiesManagerRoute),
+ ),
+ const SizedBox(height: kLargePadding),
+ ],
+ ),
+ );
+ }
           // Add more settings categories/items as needed
-          const SizedBox(height: kLargePadding), // Bottom padding
-        ],
-      ),
-    );
-  }
+    
 }
